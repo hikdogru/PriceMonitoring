@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PriceMonitoring.Core.Data
+namespace PriceMonitoring.Data.Abstract
+    
 {
     public interface IUnitOfWork : IDisposable
     {
-        
+        IProductRepository Products { get; }
+        IProductPriceRepository ProductPrices { get; }
+        Task SaveAsync();
     }
 }

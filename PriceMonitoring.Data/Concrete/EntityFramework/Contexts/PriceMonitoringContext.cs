@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PriceMonitoring.Data.Concrete.EntityFramework.Config;
 using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,20 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPrice> ProductPrices { get; set; }
+
+        public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
+        {
+
+        }
+        public PriceMonitoringContext()
+        {
+
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new ProductConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductPriceConfiguration());
+        }
     }
 }

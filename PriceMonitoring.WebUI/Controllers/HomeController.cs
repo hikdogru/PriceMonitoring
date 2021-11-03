@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
+using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.WebUI.Models;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,21 @@ namespace PriceMonitoring.WebUI.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IProductService _productService;
+        private readonly IProductPriceService _productPriceService;
         private static List<ProductModel> _products;
         private static List<ProductPriceModel> _productPriceList;
 
-        public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
+        public HomeController(
+            ILogger<HomeController> logger,
+            IConfiguration configuration,
+            IProductService productService,
+            IProductPriceService productPriceService)
         {
             _logger = logger;
             _configuration = configuration;
+            _productService = productService;
+            _productPriceService = productPriceService;
         }
 
         public IActionResult Index()
@@ -41,8 +50,8 @@ namespace PriceMonitoring.WebUI.Controllers
             _chromeOptions.AddArgument("no-sandbox");
             _chromeOptions.AddArgument("--disable-gpu");
             _chromeOptions.AddArgument("--headless");
-            
-            
+
+
             using IWebDriver driver = new ChromeDriver(options: _chromeOptions);
 
 

@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Abstract\" />
-    <Folder Include="Concrete\" />
+    <ProjectReference Include="..\PriceMonitoring.Data\PriceMonitoring.Data.csproj" />
+    <ProjectReference Include="..\PriceMonitoring.Entities\PriceMonitoring.Entities.csproj" />
   </ItemGroup>
 
 </Project>

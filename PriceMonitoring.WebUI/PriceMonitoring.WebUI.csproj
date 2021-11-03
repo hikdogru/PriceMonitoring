@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PriceMonitoring.Business\PriceMonitoring.Business.csproj" />
     <ProjectReference Include="..\PriceMonitoring.Data\PriceMonitoring.Data.csproj" />
   </ItemGroup>
 

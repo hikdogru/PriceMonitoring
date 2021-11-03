@@ -12,29 +12,37 @@ namespace PriceMonitoring.Core.Data.EntityFramework
     public class EfEntityRepositoryBase<TEntity, TContext> : IEntityRepository<TEntity>
         where TEntity : class, IEntity, new() where TContext: DbContext, new()
     {
-        public Task Add(TEntity entity)
+        private readonly TContext _context;
+        private DbSet<TEntity> Table { get; set; }
+        public EfEntityRepositoryBase()
         {
-            throw new NotImplementedException();
+            _context = new();
+            Table = _context.Set<TEntity>();
         }
 
-        public Task Delete(TEntity entity)
+        public async Task AddAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            await Table.AddAsync(entity);
         }
 
-        public Task<TEntity> Get(Expression<Func<TEntity, bool>> filter)
+        public async Task DeleteAsync(TEntity entity)
         {
-            throw new NotImplementedException();
+            Table.Remove(entity);
         }
 
-        public Task<IQueryable<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter = null)
+        public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
         {
-            throw new NotImplementedException();
+            return await Table.SingleOrDefaultAsync(filter);
         }
 
-        public Task Update(TEntity entity)
+        public async Task<IQueryable<TEntity>> GetAllAsync(Expression<Func<TEntity, bool>> filter = null)
         {
-            throw new NotImplementedException();
+            return filter == null ?  Table : Table.Where(filter);
+        }
+
+        public async Task UpdateAsync(TEntity entity)
+        {
+            Table.Update(entity);
         }
     }
 }
