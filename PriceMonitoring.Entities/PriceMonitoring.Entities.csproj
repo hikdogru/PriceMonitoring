@@ -5,9 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Concrete\" />
     <Folder Include="DTOs\" />
     <Folder Include="Abstract\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PriceMonitoring.Core\PriceMonitoring.Core.csproj" />
   </ItemGroup>
 
 </Project>

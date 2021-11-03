@@ -21,6 +21,7 @@ namespace PriceMonitoring.WebUI.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
         private static List<ProductModel> _products;
+        private static List<ProductPriceModel> _productPriceList;
 
         public HomeController(ILogger<HomeController> logger, IConfiguration configuration)
         {
@@ -39,47 +40,42 @@ namespace PriceMonitoring.WebUI.Controllers
             _chromeOptions.AddArgument("--ignore-certificate-errors");
             _chromeOptions.AddArgument("no-sandbox");
             _chromeOptions.AddArgument("--disable-gpu");
-            //_chromeOptions.AddArgument("--headless");
+            _chromeOptions.AddArgument("--headless");
+            
+            
             using IWebDriver driver = new ChromeDriver(options: _chromeOptions);
 
-            //WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+
             IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
 
-            for (int j = 1; j <= 4; j++)
+            driver.Navigate().GoToUrl("https://www.migros.com.tr/meyve-sebze-c-2");
+            js.ExecuteScript("window.scrollTo(0, 1000)");
+            Thread.Sleep(1000);
+            int pageCount = Convert.ToInt32(Math.Ceiling(double.Parse(driver.FindElement(By.CssSelector("div > div.filter__header > div")).Text.Split(" ")[0]) / 30));
+            string url = driver.Url;
+            _products = new();
+            _productPriceList = new();
+            for (int i = 1; i <= pageCount; i++)
             {
-                driver.Navigate().GoToUrl("https://www.migros.com.tr");
-                js.ExecuteScript("window.scrollTo(0, 1000)");
-                var element = driver.FindElement(By.CssSelector($"div.categories-wrapper.ng-tns-c369-4 > div:nth-child({j}) > a"));
-                element.Click();
-                Thread.Sleep(1000);
-                int pageCount = Convert.ToInt32(Math.Ceiling(double.Parse(driver.FindElement(By.CssSelector("div > div.filter__header > div")).Text.Split(" ")[0]) / 30));
-                string url = driver.Url;
-                _products = new List<ProductModel>();
-                for (int i = 1; i <= pageCount; i++)
+                string newUrl = url + $"?sayfa={i}";
+                driver.Navigate().GoToUrl(newUrl);
+                Thread.Sleep(500);
+                js.ExecuteScript("window.scrollTo(0, 750)");
+                js.ExecuteScript("window.scrollTo(750, 1750)");
+                var products = driver.FindElements(by: By.CssSelector("div[class*='product-cards'] *[class*='mdc-card']"));
+                foreach (var item in products)
                 {
-                    string newUrl = url + $"?sayfa={i}";
-                    driver.Navigate().GoToUrl(newUrl);
-                    Thread.Sleep(500);
-                    js.ExecuteScript("window.scrollTo(0, 750)");
-                    js.ExecuteScript("window.scrollTo(750, 1750)");
-                    var products = driver.FindElements(by: By.CssSelector("div[class*='product-cards'] *[class*='mdc-card']"));
-                    foreach (var item in products)
-                    {
-                        string name = item.FindElement(By.CssSelector("a[class*='product-name']")).Text;
-                        string price = item.FindElement(By.CssSelector("span[class*='amount']")).Text;
-                        string image = item.FindElement(By.TagName("img")).GetAttribute("src");
-                        var model = new ProductModel { Name = name, Price = price, Image = image };
-                        _products.Add(model);
-                    }
+                    string name = item.FindElement(By.CssSelector("a[class*='product-name']")).Text;
+                    string price = item.FindElement(By.CssSelector("span[class*='amount']")).Text;
+                    string image = item.FindElement(By.TagName("img")).GetAttribute("src");
+                    var model = new ProductModel { Name = name, Price = price, Image = image };
+                    _products.Add(model);
                 }
             }
 
 
 
-
             driver.Close();
-            _products = new();
-            
             ViewBag.ProductCount = _products.Count;
 
             stopwatch.Stop();

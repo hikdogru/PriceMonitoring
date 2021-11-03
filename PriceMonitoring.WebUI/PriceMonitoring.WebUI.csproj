@@ -15,4 +15,8 @@
     <PackageReference Include="Selenium.WebDriver.ChromeDriver" Version="95.0.4638.5400" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PriceMonitoring.Data\PriceMonitoring.Data.csproj" />
+  </ItemGroup>
+
 </Project>
