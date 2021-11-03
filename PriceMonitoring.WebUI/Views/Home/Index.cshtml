@@ -1,8 +1,22 @@
-﻿@{
+﻿@model List<ProductModel>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h2>Product Count is : @ViewBag.ProductCount</h2>
+    <h2>Elapsed time is : @ViewBag.ElapsedTime</h2>
+</div>
+
+<div class="row">
+    @foreach (var product in Model)
+    {
+    <div class="col-md-3">
+        <img src="@product.Image" style="width: 100%; object-fit: contain;" />
+        <h5 class="text-center">@product.Name</h5>
+        <h5 class="text-center">@product.Price</h5>
+    </div>
+    }
 </div>
