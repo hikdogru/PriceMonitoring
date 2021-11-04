@@ -14,22 +14,25 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         private EfCoreProductRepository _productRepository;
         private EfCoreProductPriceRepository _productPriceRepository;
 
-        public IProductRepository Products => _productRepository = _productRepository ?? new EfCoreProductRepository();
-        public IProductPriceRepository ProductPrices => _productPriceRepository = _productPriceRepository ?? new EfCoreProductPriceRepository();
-
         public UnitOfWork(PriceMonitoringContext context)
         {
             _context = context;
         }
-
+        public IProductRepository Products => _productRepository = _productRepository ?? new EfCoreProductRepository(_context);
+        public IProductPriceRepository ProductPrices => _productPriceRepository = _productPriceRepository ?? new EfCoreProductPriceRepository(_context);
         public void Dispose()
         {
             _context.Dispose();
         }
 
+        public void Save()
+        {
+            _context.SaveChanges();
+        }
+
         public async Task SaveAsync()
         {
-           await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
         }
     }
 }

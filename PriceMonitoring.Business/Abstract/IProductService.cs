@@ -1,4 +1,5 @@
-﻿using PriceMonitoring.Entities.Concrete;
+﻿using PriceMonitoring.Core.Utilities.Results;
+using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,22 @@ namespace PriceMonitoring.Business.Abstract
 {
     public interface IProductService
     {
-        Task<IQueryable<Product>> GetAll(Expression<Func<Product, bool>> filter = null);
-        Task<Product> Get(Expression<Func<Product, bool>> filter);
-        Task Add(Product product);
-        Task Update(Product product);
-        Task Delete(Product product);
+        #region async
+        Task<IDataResult<IQueryable<Product>>> GetAllAsync();
+        Task<IDataResult<Product>> GetByIdAsync(int id);
+        Task<IDataResult<Product>> GetByImageSourceAsync(string imgSource);
+        Task<IResult> AddAsync(Product product);
+        Task<IResult> UpdateAsync(Product product);
+        Task<IResult> DeleteAsync(Product product);
+        #endregion
+
+        #region sync
+        IDataResult<IQueryable<Product>> GetAll();
+        IDataResult<Product> GetById(int id);
+        IDataResult<Product> GetByImageSource(string imgSource);
+        IResult Add(Product product);
+        IResult Update(Product product);
+        IResult Delete(Product product);
+        #endregion
     }
 }

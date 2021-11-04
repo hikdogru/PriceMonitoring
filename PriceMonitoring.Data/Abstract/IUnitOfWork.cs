@@ -12,5 +12,6 @@ namespace PriceMonitoring.Data.Abstract
         IProductRepository Products { get; }
         IProductPriceRepository ProductPrices { get; }
         Task SaveAsync();
+        void Save();
     }
 }

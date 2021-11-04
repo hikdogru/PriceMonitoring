@@ -14,9 +14,9 @@ namespace PriceMonitoring.Core.Data.EntityFramework
     {
         private readonly TContext _context;
         private DbSet<TEntity> Table { get; set; }
-        public EfEntityRepositoryBase()
+        public EfEntityRepositoryBase(TContext context)
         {
-            _context = new();
+            _context = context;
             Table = _context.Set<TEntity>();
         }
 
@@ -43,6 +43,31 @@ namespace PriceMonitoring.Core.Data.EntityFramework
         public async Task UpdateAsync(TEntity entity)
         {
             Table.Update(entity);
+        }
+
+        public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> filter = null)
+        {
+            return filter == null ? Table : Table.Where(filter);
+        }
+
+        public TEntity Get(Expression<Func<TEntity, bool>> filter)
+        {
+            return  Table.SingleOrDefault(filter);
+        }
+
+        public void Add(TEntity entity)
+        {
+            Table.Add(entity);
+        }
+
+        public void Update(TEntity entity)
+        {
+            Table.Update(entity);
+        }
+
+        public void Delete(TEntity entity)
+        {
+            Table.Remove(entity);
         }
     }
 }

@@ -7,6 +7,7 @@ using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using PriceMonitoring.Business.Abstract;
+using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.WebUI.Models;
 using System;
 using System.Collections.Generic;
@@ -19,13 +20,15 @@ namespace PriceMonitoring.WebUI.Controllers
 {
     public class HomeController : Controller
     {
+        #region fields
         private readonly ILogger<HomeController> _logger;
         private readonly IConfiguration _configuration;
         private readonly IProductService _productService;
         private readonly IProductPriceService _productPriceService;
         private static List<ProductModel> _products;
-        private static List<ProductPriceModel> _productPriceList;
+        #endregion
 
+        #region ctor
         public HomeController(
             ILogger<HomeController> logger,
             IConfiguration configuration,
@@ -37,6 +40,7 @@ namespace PriceMonitoring.WebUI.Controllers
             _productService = productService;
             _productPriceService = productPriceService;
         }
+        #endregion
 
         public IActionResult Index()
         {
@@ -63,7 +67,6 @@ namespace PriceMonitoring.WebUI.Controllers
             int pageCount = Convert.ToInt32(Math.Ceiling(double.Parse(driver.FindElement(By.CssSelector("div > div.filter__header > div")).Text.Split(" ")[0]) / 30));
             string url = driver.Url;
             _products = new();
-            _productPriceList = new();
             for (int i = 1; i <= pageCount; i++)
             {
                 string newUrl = url + $"?sayfa={i}";
@@ -77,12 +80,13 @@ namespace PriceMonitoring.WebUI.Controllers
                     string name = item.FindElement(By.CssSelector("a[class*='product-name']")).Text;
                     string price = item.FindElement(By.CssSelector("span[class*='amount']")).Text;
                     string image = item.FindElement(By.TagName("img")).GetAttribute("src");
-                    var model = new ProductModel { Name = name, Price = price, Image = image };
+                    var model = new ProductModel { Name = name, Image = image, Price = price };
                     _products.Add(model);
+
                 }
             }
 
-
+            SaveDatabase(_products);
 
             driver.Close();
             ViewBag.ProductCount = _products.Count;
@@ -93,7 +97,16 @@ namespace PriceMonitoring.WebUI.Controllers
             return View(model: _products);
         }
 
-
+        private void SaveDatabase(List<ProductModel> products)
+        {
+            foreach (var model in products)
+            {
+                _productService.Add(product: new Product { Image = model.Image, Name = model.Name });
+                var entity = _productService.GetByImageSource(model.Image);
+                var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
+                _productPriceService.Add(productPrice: productPrice);
+            }
+        }
 
         public IActionResult Privacy()
         {

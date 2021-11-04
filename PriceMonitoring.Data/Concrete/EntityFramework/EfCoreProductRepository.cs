@@ -12,5 +12,8 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
 {
     public class EfCoreProductRepository : EfEntityRepositoryBase<Product, PriceMonitoringContext>, IProductRepository
     {
+        public EfCoreProductRepository(PriceMonitoringContext context) : base(context)
+        {
+        }
     }
 }

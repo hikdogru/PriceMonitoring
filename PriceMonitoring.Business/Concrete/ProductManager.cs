@@ -1,4 +1,6 @@
 ﻿using PriceMonitoring.Business.Abstract;
+using PriceMonitoring.Business.Constants;
+using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Entities.Concrete;
 using System;
@@ -17,32 +19,78 @@ namespace PriceMonitoring.Business.Concrete
         {
             _unitOfWork = unitOfWork;
         }
-        public async Task Add(Product product)
+
+        public IResult Add(Product product)
         {
-           await _unitOfWork.Products.AddAsync(entity: product);
-            await _unitOfWork.SaveAsync();
+            _unitOfWork.Products.Add(entity: product);
+            _unitOfWork.Save();
+            return new SuccessResult(message: Messages.ProductAdded);
         }
 
-        public async Task Delete(Product product)
+        public async Task<IResult> AddAsync(Product product)
+        {
+            await _unitOfWork.Products.AddAsync(entity: product);
+            await _unitOfWork.SaveAsync();
+            return new SuccessResult(message: Messages.ProductAdded);
+        }
+
+        public IResult Delete(Product product)
+        {
+            _unitOfWork.Products.Delete(entity: product);
+            _unitOfWork.Save();
+            return new SuccessResult(message: Messages.ProductDeleted);
+        }
+
+        public async Task<IResult> DeleteAsync(Product product)
         {
             await _unitOfWork.Products.DeleteAsync(entity: product);
             await _unitOfWork.SaveAsync();
+            return new SuccessResult(message: Messages.ProductDeleted);
         }
 
-        public async Task<Product> Get(Expression<Func<Product, bool>> filter)
+        public IDataResult<IQueryable<Product>> GetAll()
         {
-            return await _unitOfWork.Products.GetAsync(filter: filter);
+            return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetAll());
         }
 
-        public async Task<IQueryable<Product>> GetAll(Expression<Func<Product, bool>> filter = null)
+        public async Task<IDataResult<IQueryable<Product>>> GetAllAsync()
         {
-            return await _unitOfWork.Products.GetAllAsync(filter: filter);
+            return new SuccessDataResult<IQueryable<Product>>(await _unitOfWork.Products.GetAllAsync(), message: Messages.ProductsListed);
         }
 
-        public async Task Update(Product product)
+        public IDataResult<Product> GetById(int id)
+        {
+            return new SuccessDataResult<Product>(_unitOfWork.Products.Get(x => x.Id == id), message: Messages.ProductListed);
+        }
+
+        public async Task<IDataResult<Product>> GetByIdAsync(int id)
+        {
+            return new SuccessDataResult<Product>(await _unitOfWork.Products.GetAsync(x => x.Id == id), message: Messages.ProductListed);
+        }
+
+        public IDataResult<Product> GetByImageSource(string imgSource)
+        {
+            return new SuccessDataResult<Product>(_unitOfWork.Products.Get(x => x.Image == imgSource), message: Messages.ProductListed);
+
+        }
+
+        public async Task<IDataResult<Product>> GetByImageSourceAsync(string imgSource)
+        {
+            return new SuccessDataResult<Product>(await _unitOfWork.Products.GetAsync(x => x.Image == imgSource), message: Messages.ProductListed);
+        }
+
+        public IResult Update(Product product)
+        {
+            _unitOfWork.Products.Update(entity: product);
+            _unitOfWork.Save();
+            return new SuccessResult(message: Messages.ProductUpdated);
+        }
+
+        public async Task<IResult> UpdateAsync(Product product)
         {
             await _unitOfWork.Products.UpdateAsync(entity: product);
             await _unitOfWork.SaveAsync();
+            return new SuccessResult(message: Messages.ProductUpdated);
         }
     }
 }
