@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace PriceMonitoring.WebUI.Models
+namespace PriceMonitoring.Entities.DTOs
 {
-    public class ProductModel
+    public class ProductWithPriceDto
     {
-        public int Id { get; set; }
         public string Name { get; set; }
         public string Price { get; set; }
         public string Image { get; set; }

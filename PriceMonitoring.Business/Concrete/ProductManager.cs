@@ -22,9 +22,16 @@ namespace PriceMonitoring.Business.Concrete
 
         public IResult Add(Product product)
         {
-            _unitOfWork.Products.Add(entity: product);
-            _unitOfWork.Save();
-            return new SuccessResult(message: Messages.ProductAdded);
+            var isProductExist = IsProductExistInDatabase(product: product);
+            if (isProductExist == false)
+            {
+                _unitOfWork.Products.Add(entity: product);
+                _unitOfWork.Save();
+                return new SuccessResult(message: Messages.ProductAdded);
+            }
+
+            return new ErrorResult(message: "Error");
+            
         }
 
         public async Task<IResult> AddAsync(Product product)
@@ -70,13 +77,17 @@ namespace PriceMonitoring.Business.Concrete
 
         public IDataResult<Product> GetByImageSource(string imgSource)
         {
-            return new SuccessDataResult<Product>(_unitOfWork.Products.Get(x => x.Image == imgSource), message: Messages.ProductListed);
-
+            return new SuccessDataResult<Product>(_unitOfWork.Products.GetAll(x => x.Image == imgSource).OrderBy(x => x.Id).LastOrDefault(), message: Messages.ProductListed);
         }
 
         public async Task<IDataResult<Product>> GetByImageSourceAsync(string imgSource)
         {
             return new SuccessDataResult<Product>(await _unitOfWork.Products.GetAsync(x => x.Image == imgSource), message: Messages.ProductListed);
+        }
+
+        public IDataResult<IQueryable<Product>> GetProductsWithPrice()
+        {
+            return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetProductsWithPrice(), message: Messages.ProductListed);
         }
 
         public IResult Update(Product product)
@@ -91,6 +102,11 @@ namespace PriceMonitoring.Business.Concrete
             await _unitOfWork.Products.UpdateAsync(entity: product);
             await _unitOfWork.SaveAsync();
             return new SuccessResult(message: Messages.ProductUpdated);
+        }
+
+        private bool IsProductExistInDatabase(Product product)
+        {
+            return _unitOfWork.Products.GetAll(x => x.Name == product.Name && x.Image == product.Image).Count() > 0;
         }
     }
 }
