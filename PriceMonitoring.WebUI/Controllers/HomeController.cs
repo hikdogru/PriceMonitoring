@@ -2,20 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using OpenQA.Selenium.Support.UI;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.WebUI.Models;
 using PriceMonitoring.WebUI.Models.GroceryStore;
-using PriceMonitoring.WebUI.Models.Selenium.Chrome;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PriceMonitoring.WebUI.Controllers
 {
@@ -47,9 +41,9 @@ namespace PriceMonitoring.WebUI.Controllers
         public IActionResult Index()
         {
             var stopwatch = Stopwatch.StartNew();
-            //var products = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2");
+            //var products = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
 
-            var products = _productService.GetProductsWithPrice().Data.ToList();
+            var products = _productService.GetProductsWithPrice().Data.Take(12).ToList();
             var productsModel = new List<ProductModel>();
             //SaveDatabase(products);
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));

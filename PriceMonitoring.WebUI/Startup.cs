@@ -30,7 +30,11 @@ namespace PriceMonitoring.WebUI
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllersWithViews();
+
+            services.AddControllersWithViews()
+            .AddNewtonsoftJson(options =>
+            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+);
 
             // Add dbcontext
             services.AddDbContext<PriceMonitoringContext>(option => option.UseSqlServer(Configuration.GetConnectionString("PriceMonitoringConnectionString")));
@@ -39,7 +43,7 @@ namespace PriceMonitoring.WebUI
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IProductService, ProductManager>();
             services.AddScoped<IProductPriceService, ProductPriceManager>();
-            
+
             // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 

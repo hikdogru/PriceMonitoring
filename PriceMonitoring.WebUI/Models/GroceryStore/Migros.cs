@@ -27,12 +27,13 @@ namespace PriceMonitoring.WebUI.Models.GroceryStore
                 chromeDriverModel.GoToUrl(newUrl);
                 Thread.Sleep(1000);
                 chromeDriverModel.ExecuteScript("window.scrollTo(0, 750)");
-                chromeDriverModel.ExecuteScript("window.scrollTo(750, 1750)");
+                Thread.Sleep(500);
+                chromeDriverModel.ExecuteScript("window.scrollTo(750, 1500)");
                 var products = chromeDriverModel.FindElements(by: By.CssSelector("div[class*='product-cards'] *[class*='mdc-card']"));
                 foreach (var item in products)
                 {
                     string name = item.FindElement(By.CssSelector("a[class*='product-name']")).Text;
-                    string price = item.FindElement(By.CssSelector("span[class*='amount']")).Text;
+                    string price = item.FindElement(By.CssSelector("div[class*='price-new'] span[class*='amount']")).Text;
                     string image = item.FindElement(By.TagName("img")).GetAttribute("src");
                     var model = new ProductModel { Name = name, Image = image, Price = price };
                     productList.Add(model);

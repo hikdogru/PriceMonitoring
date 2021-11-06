@@ -9,6 +9,7 @@ namespace PriceMonitoring.WebUI.Models
     {
         public int ProductId { get; set; }
         public double Price { get; set; }
+        public ProductModel Product { get; set; }
         public DateTime SavedDate { get; set; }
     }
 }

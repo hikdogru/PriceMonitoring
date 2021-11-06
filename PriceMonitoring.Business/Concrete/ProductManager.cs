@@ -90,6 +90,11 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetProductsWithPrice(), message: Messages.ProductListed);
         }
 
+        public IDataResult<Product> GetProductWithPriceById(int id)
+        {
+            return new SuccessDataResult<Product>(GetProductsWithPrice().Data.Where(x => x.Id == id).SingleOrDefault());
+        }
+
         public IResult Update(Product product)
         {
             _unitOfWork.Products.Update(entity: product);

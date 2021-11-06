@@ -28,6 +28,7 @@ namespace PriceMonitoring.Business.Abstract
         IResult Update(Product product);
         IResult Delete(Product product);
         IDataResult<IQueryable<Product>> GetProductsWithPrice();
+        IDataResult<Product> GetProductWithPriceById(int id);
         #endregion
     }
 }
