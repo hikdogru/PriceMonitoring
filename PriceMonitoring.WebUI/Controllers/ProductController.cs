@@ -25,6 +25,7 @@ namespace PriceMonitoring.WebUI.Controllers
         }
         #endregion
 
+        #region methods
         public IActionResult Index()
         {
             return View();
@@ -42,8 +43,7 @@ namespace PriceMonitoring.WebUI.Controllers
             ViewData["Prices"] = JsonConvert.SerializeObject(prices);
             ViewData["Dates"] = JsonConvert.SerializeObject(dates);
             return View(model: productPriceModel);
-            
-            
         }
+        #endregion
     }
 }

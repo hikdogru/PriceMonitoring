@@ -30,10 +30,10 @@ namespace PriceMonitoring.WebUI.Models.Selenium.Chrome
             ChromeDriver.Navigate().GoToUrl(url: url);
         }
 
-        public void ExecuteScript(string script)
+        public object ExecuteScript(string script)
         {
             JavaScriptExecutor = (IJavaScriptExecutor)ChromeDriver;
-            JavaScriptExecutor.ExecuteScript(script: script);
+            return JavaScriptExecutor.ExecuteScript(script: script);
         }
 
         public IWebElement FindElement(By by)

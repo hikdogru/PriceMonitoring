@@ -38,11 +38,13 @@ namespace PriceMonitoring.WebUI.Controllers
         }
         #endregion
 
+        #region methods
         public IActionResult Index()
         {
             var stopwatch = Stopwatch.StartNew();
             //var products = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
 
+            //var products = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
             var products = _productService.GetProductsWithPrice().Data.Take(12).ToList();
             var productsModel = new List<ProductModel>();
             //SaveDatabase(products);
@@ -75,5 +77,7 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        #endregion
     }
 }
