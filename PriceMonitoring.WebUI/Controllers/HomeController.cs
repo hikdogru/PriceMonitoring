@@ -45,7 +45,7 @@ namespace PriceMonitoring.WebUI.Controllers
             //var products = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
 
             //var products = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
-            var products = _productService.GetProductsWithPrice().Data.Take(12).ToList();
+            var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 2).Take(12).ToList();
             var productsModel = new List<ProductModel>();
             //SaveDatabase(products);
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
@@ -60,7 +60,7 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             foreach (var model in products)
             {
-                _productService.Add(product: new Product { Image = model.Image, Name = model.Name });
+                _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
                 var entity = _productService.GetByImageSource(model.Image.ToString());
                 var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
                 _productPriceService.Add(productPrice: productPrice);

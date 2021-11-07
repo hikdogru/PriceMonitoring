@@ -40,7 +40,7 @@ namespace PriceMonitoring.WebUI.Models.GroceryStore
                     string name = item.FindElement(By.CssSelector("a[class*='product-name']")).Text;
                     string price = item.FindElement(By.CssSelector("div[class*='price-new'] span[class*='amount']")).Text;
                     string image = item.FindElement(By.TagName("img")).GetAttribute("src");
-                    var model = new ProductModel { Name = name, Image = image, Price = price };
+                    var model = new ProductModel { Name = name, Image = image, Price = price, WebsiteId = 1 };
                     productList.Add(model);
                 }
             }

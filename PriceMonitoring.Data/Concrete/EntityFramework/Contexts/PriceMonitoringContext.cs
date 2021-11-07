@@ -13,6 +13,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductPrice> ProductPrices { get; set; }
+        public DbSet<Website> Websites { get; set; }
 
         public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
         {
@@ -27,6 +28,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
         {
             modelBuilder.ApplyConfiguration(new ProductConfiguration());
             modelBuilder.ApplyConfiguration(new ProductPriceConfiguration());
+            modelBuilder.ApplyConfiguration(new WebsiteConfiguration());
         }
     }
 }
