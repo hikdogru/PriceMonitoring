@@ -16,8 +16,9 @@
         <div class="col-md-3">
             <form method="post" asp-controller="Product" asp-action="Detail">
                 <input type="hidden" asp-for="@product.Id" name="id"/>
-                <img src="@product.Image" style="width: 100%; object-fit: contain;" />
+                <img src="@product.Image"/>
                 <h5 class="text-center">@product.Name</h5>
+                
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary text-center">Detail</button>
                 </div>

@@ -95,6 +95,17 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<Product>(GetProductsWithPrice().Data.Where(x => x.Id == id).SingleOrDefault());
         }
 
+        public IDataResult<IQueryable<Product>> Search(string q)
+        {
+            var products = _unitOfWork.Products.Search(q);
+            if (products.Count() == 0)
+            {
+                return new ErrorDataResult<IQueryable<Product>>(message: Messages.ProductSearchNotExist);
+            }
+
+            return new SuccessDataResult<IQueryable<Product>>(data: products, message: Messages.ProductsListed);
+        }
+
         public IResult Update(Product product)
         {
             _unitOfWork.Products.Update(entity: product);

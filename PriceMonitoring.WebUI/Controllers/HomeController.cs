@@ -42,14 +42,20 @@ namespace PriceMonitoring.WebUI.Controllers
         public IActionResult Index()
         {
             var stopwatch = Stopwatch.StartNew();
-            //var products = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
 
-            //var products = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
-            var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 2).Take(12).ToList();
+
+            //var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
+            //SaveDatabase(products: productsFromMigros);
+
+            //var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
+            //SaveDatabase(productsFromA101);
             var productsModel = new List<ProductModel>();
-            //SaveDatabase(products);
+            var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 1).Take(12).ToList();
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
-            ViewBag.ProductCount = products.Count();
+
+            //productsFromMigros.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
+            //productsFromA101.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
+            ViewBag.ProductCount = productsModel.Count();
             stopwatch.Stop();
             ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
 

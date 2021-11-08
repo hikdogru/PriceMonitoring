@@ -27,5 +27,11 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
 
             return filter == null ? products : products.Where(filter);
         }
+
+        public IQueryable<Product> Search(string q)
+        {
+            var products = _context.Products.Where(x => x.Name.Contains(q));
+            return products;
+        }
     }
 }

@@ -13,5 +13,7 @@ namespace PriceMonitoring.Data.Abstract
     public interface IProductRepository : IEntityRepository<Product>
     {
         IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null);
+        IQueryable<Product> Search(string q);
+
     }
 }

@@ -1,21 +1,35 @@
-﻿@model ProductPriceViewModel
-@{
-
-    ViewData["Title"] = "Detail";
+﻿@model List<Product>
 
 
-    var product = Model;
 
+<h5>Compare page</h5>
+
+
+<form method="post">
+    <input type="search" class="form-control" name="q" placeholder="Product name" />
+    <button type="submit" class="btn btn-primary" asp-action="Search"> Search </button>
+</form>
+
+
+
+
+
+@if (Model != null)
+{
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3">
+                <form method="post">
+                    <input type="hidden" value="@product.Id" name="id" />
+                    <img src="@product.Image" alt="Product Image" />
+                    <h5>@product.Name</h5>
+                    <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                </form>
+            </div>
+        }
+    </div>
 }
-
-<div class="col-md-3">
-    <img src="@product.Image" alt="Product Image" />
-    <h5>@product.Name</h5>
-    <h5>@(product.ProductPrice.ToList()[0].Price )</h5>
-
-
-</div>
-
 
 
 
@@ -40,47 +54,46 @@
 
 
 
-            Highcharts.chart('container', {
+        Highcharts.chart('container', {
 
             title: {
                 text: 'Product price changing, 2021'
             },
 
-                subtitle: {
-                    text: 'Market: Migros'
+            subtitle: {
+                text: 'Market: Migros'
             },
 
             yAxis: {
                 title: {
                     text: 'Price (TRY)'
                 }
-                },
+            },
 
             xAxis: {
 
 
-                categories:  dates
-                },
+                categories: dates
+            },
 
-                legend: {
+            legend: {
                 layout: 'vertical',
                 align: 'right',
                 verticalAlign: 'middle'
-                },
+            },
 
-                plotOptions: {
+            plotOptions: {
                 series: {
-                        label: {
-                            connectorAllowed: false,
+                    label: {
+                        connectorAllowed: false,
 
+                    }
                 }
-                }
-                },
+            },
 
-                series: [{
-                    name: '@Html.Raw(product.Name)',
-                    data: prices
-                }],
+            series: @Html.Raw(ViewData["Products"])
+
+                ,
 
                 responsive: {
                 rules: [{
@@ -101,3 +114,6 @@
     </script>
 
 }
+
+
+
