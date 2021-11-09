@@ -7,7 +7,8 @@
 
 <form method="post">
     <input type="search" class="form-control" name="q" placeholder="Product name" />
-    <button type="submit" class="btn btn-primary" asp-action="Search"> Search </button>
+    <button type="submit" class="btn btn-primary mt-2" asp-action="Search"> Search </button>
+
 </form>
 
 
@@ -72,8 +73,7 @@
 
             xAxis: {
 
-
-                categories: dates
+                categories: dates 
             },
 
             legend: {
@@ -92,7 +92,6 @@
             },
 
             series: @Html.Raw(ViewData["Products"])
-
                 ,
 
                 responsive: {

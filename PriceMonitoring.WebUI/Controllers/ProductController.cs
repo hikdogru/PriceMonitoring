@@ -18,15 +18,18 @@ namespace PriceMonitoring.WebUI.Controllers
         #region fields
         private static List<Product> _searchResults;
         private static List<ChartJsonModel> _chartProducts = new();
+        private static List<string> _dates = new();
         private readonly IProductService _productService;
+        private readonly IProductPriceService _productPriceService;
         private readonly IMapper _mapper;
         #endregion
 
         #region ctor
-        public ProductController(IProductService productService, IMapper mapper)
+        public ProductController(IProductService productService, IMapper mapper, IProductPriceService productPriceService)
         {
             _productService = productService;
             _mapper = mapper;
+            _productPriceService = productPriceService;
         }
         #endregion
 
@@ -77,28 +80,58 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult AddToCompare(int id)
         {
-            
+            string[] dates = { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021" };
             var product = _productService.GetProductWithPriceById(id: id).Data;
+
+
+            if (dates.Length > product.ProductPrice.Count)
+            {
+                List<string> dates2 = new();
+                var productList = _productService.GetProductWithPriceById(product.Id).Data;
+
+                foreach (var item in productList.ProductPrice)
+                {
+                    dates2.Add(item.SavedDate.Date.ToString("MM/d/yyyy"));
+                }
+
+                var diff = dates.Except(dates2).ToList();
+
+                foreach (var item in diff)
+                {
+                    var productPrice = new ProductPrice
+                    {
+                        SavedDate = DateTime.Parse(item),
+                        Price = 0,
+                        ProductId = product.Id
+                    };
+                    _productPriceService.Add(productPrice: productPrice);
+                }
+            }
+
 
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
-            var dates = new List<string>();
 
-            productPriceModel.ProductPrice.ToList().ForEach(x => prices.Add(x.Price));
+            productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => prices.Add(x.Price));
 
-            productPriceModel.ProductPrice.ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
 
-            _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices});
+
+            if (_dates.Count == 0 || _dates.Count < prices.Count)
+            {
+                productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => _dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
+            }
+
+            _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
             ViewData["Prices"] = JsonConvert.SerializeObject(prices);
-            ViewData["Dates"] = JsonConvert.SerializeObject(dates);
+            ViewData["Dates"] = JsonConvert.SerializeObject(_dates.OrderBy(x => x));
             ViewData["Products"] = JsonConvert.SerializeObject(_chartProducts, Formatting.Indented,
                                                                     new JsonSerializerSettings
                                                                     {
                                                                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                                                                         ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
                                                                     });
+            
 
-            string json = ViewData["Products"] as string;
 
             return View("Compare", model: _searchResults.ToList());
         }

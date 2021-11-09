@@ -7,6 +7,7 @@ using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.WebUI.Models;
 using PriceMonitoring.WebUI.Models.GroceryStore;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -43,7 +44,6 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             var stopwatch = Stopwatch.StartNew();
 
-
             //var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
             //SaveDatabase(products: productsFromMigros);
 
@@ -58,19 +58,21 @@ namespace PriceMonitoring.WebUI.Controllers
             ViewBag.ProductCount = productsModel.Count();
             stopwatch.Stop();
             ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
-
+            
             return View(model: productsModel);
         }
 
-        private void SaveDatabase(List<ProductModel> products)
+        private void SaveDatabase(/*List<ProductModel> products*/)
         {
-            foreach (var model in products)
-            {
-                _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
-                var entity = _productService.GetByImageSource(model.Image.ToString());
-                var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
-                _productPriceService.Add(productPrice: productPrice);
-            }
+            //foreach (var model in products)
+            //{
+            //    _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
+            //    var entity = _productService.GetByImageSource(model.Image.ToString());
+            //    var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
+            //    _productPriceService.Add(productPrice: productPrice);
+            //}
+
+
         }
 
         public IActionResult Privacy()

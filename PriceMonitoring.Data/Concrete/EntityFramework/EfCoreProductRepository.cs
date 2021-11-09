@@ -24,7 +24,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         public IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null)
         {
             var products = _context.Products.Include(x => x.ProductPrice);
-
+            
             return filter == null ? products : products.Where(filter);
         }
 
