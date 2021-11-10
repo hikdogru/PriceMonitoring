@@ -3,6 +3,7 @@ using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,6 +11,6 @@ namespace PriceMonitoring.Data.Abstract
 {
     public interface IProductPriceRepository : IEntityRepository<ProductPrice>
     {
-
+        IQueryable<ProductPrice> GetProductsWithPriceAndWebsite(Expression<Func<ProductPrice, bool>> filter = null);
     }
 }

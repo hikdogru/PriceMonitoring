@@ -11,7 +11,7 @@ namespace PriceMonitoring.Business.Abstract
 {
     public interface IProductPriceService
     {
-        #region sync
+        #region async
         Task<IDataResult<IQueryable<ProductPrice>>> GetAllAsync();
         Task<IDataResult<ProductPrice>> GetByIdAsync(int id);
         Task<IDataResult<ProductPrice>> GetByProductIdAsync(int id);
@@ -27,6 +27,7 @@ namespace PriceMonitoring.Business.Abstract
         IResult Add(ProductPrice productPrice);
         IResult Update(ProductPrice productPrice);
         IResult Delete(ProductPrice productPrice);
+        IDataResult<IQueryable<ProductPrice>> GetProductsWithPriceAndWebsite();
         #endregion
     }
 }

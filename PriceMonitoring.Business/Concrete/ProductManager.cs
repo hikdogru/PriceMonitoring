@@ -3,6 +3,7 @@ using PriceMonitoring.Business.Constants;
 using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Entities.Concrete;
+using PriceMonitoring.Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -90,20 +91,25 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetProductsWithPrice(), message: Messages.ProductListed);
         }
 
+        public IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> GetProductsWithPriceAndWebsite(Expression<Func<Product, bool>> filter = null)
+        {
+            return new SuccessDataResult<IQueryable<ProductWithPriceAndWebsiteDto>>(_unitOfWork.Products.GetProductsWithPriceAndWebsite(), message: Messages.ProductsListed);
+        }
+
         public IDataResult<Product> GetProductWithPriceById(int id)
         {
             return new SuccessDataResult<Product>(GetProductsWithPrice().Data.Where(x => x.Id == id).SingleOrDefault());
         }
 
-        public IDataResult<IQueryable<Product>> Search(string q)
+        public IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> Search(string q)
         {
             var products = _unitOfWork.Products.Search(q);
             if (products.Count() == 0)
             {
-                return new ErrorDataResult<IQueryable<Product>>(message: Messages.ProductSearchNotExist);
+                return new ErrorDataResult<IQueryable<ProductWithPriceAndWebsiteDto>>(message: Messages.ProductSearchNotExist);
             }
 
-            return new SuccessDataResult<IQueryable<Product>>(data: products, message: Messages.ProductsListed);
+            return new SuccessDataResult<IQueryable<ProductWithPriceAndWebsiteDto>>(data: products, message: Messages.ProductsListed);
         }
 
         public IResult Update(Product product)

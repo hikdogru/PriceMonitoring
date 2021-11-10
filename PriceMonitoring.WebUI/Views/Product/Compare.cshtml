@@ -1,4 +1,4 @@
-﻿@model List<Product>
+﻿@model List<ProductWithPriceAndWebsiteViewModel>
 
 
 
@@ -22,9 +22,10 @@
         {
             <div class="col-md-3">
                 <form method="post">
-                    <input type="hidden" value="@product.Id" name="id" />
-                    <img src="@product.Image" alt="Product Image" />
-                    <h5>@product.Name</h5>
+                    <input type="hidden" value="@product.Product.Id" name="id" />
+                    <img src="@product.Product.Image" alt="Product Image" />
+                    <h5>@product.Product.Name</h5>
+                    <h5>@product.Website.Name</h5>
                     <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
                 </form>
             </div>
@@ -61,9 +62,6 @@
                 text: 'Product price changing, 2021'
             },
 
-            subtitle: {
-                text: 'Market: Migros'
-            },
 
             yAxis: {
                 title: {

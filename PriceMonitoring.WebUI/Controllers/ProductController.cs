@@ -16,7 +16,7 @@ namespace PriceMonitoring.WebUI.Controllers
     public class ProductController : Controller
     {
         #region fields
-        private static List<Product> _searchResults;
+        private static List<ProductWithPriceAndWebsiteViewModel> _searchResults;
         private static List<ChartJsonModel> _chartProducts = new();
         private static List<string> _dates = new();
         private readonly IProductService _productService;
@@ -69,8 +69,8 @@ namespace PriceMonitoring.WebUI.Controllers
                 if (result.Success)
                 {
                     _searchResults = new();
-                    _searchResults = result.Data.ToList();
-                    return View("Compare", model: result.Data.ToList());
+                    result.Data.ToList().ForEach(x => _searchResults.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(x)));
+                    return View("Compare", model: _searchResults);
                 }
             }
             return View("Compare");
@@ -80,11 +80,10 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult AddToCompare(int id)
         {
-            string[] dates = { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021" };
+            List<string> dates = new() { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021", "11/9/2021" };
+           
             var product = _productService.GetProductWithPriceById(id: id).Data;
-
-
-            if (dates.Length > product.ProductPrice.Count)
+            if (dates.Count > product.ProductPrice.Count)
             {
                 List<string> dates2 = new();
                 var productList = _productService.GetProductWithPriceById(product.Id).Data;
@@ -95,7 +94,6 @@ namespace PriceMonitoring.WebUI.Controllers
                 }
 
                 var diff = dates.Except(dates2).ToList();
-
                 foreach (var item in diff)
                 {
                     var productPrice = new ProductPrice
@@ -107,21 +105,25 @@ namespace PriceMonitoring.WebUI.Controllers
                     _productPriceService.Add(productPrice: productPrice);
                 }
             }
-
-
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
 
             productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => prices.Add(x.Price));
-
-
 
             if (_dates.Count == 0 || _dates.Count < prices.Count)
             {
                 productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => _dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
             }
 
-            _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
+            var isExistProductInList = false;
+            if (_chartProducts.Count > 0)
+            {
+                isExistProductInList = _chartProducts.Select(x => x.Name == product.Name).First();
+            }
+            if (isExistProductInList == false)
+            {
+                _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
+            }
             ViewData["Prices"] = JsonConvert.SerializeObject(prices);
             ViewData["Dates"] = JsonConvert.SerializeObject(_dates.OrderBy(x => x));
             ViewData["Products"] = JsonConvert.SerializeObject(_chartProducts, Formatting.Indented,
@@ -131,8 +133,6 @@ namespace PriceMonitoring.WebUI.Controllers
                                                                         ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
                                                                     });
             
-
-
             return View("Compare", model: _searchResults.ToList());
         }
 

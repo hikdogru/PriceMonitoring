@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using PriceMonitoring.Entities.Concrete;
+using PriceMonitoring.Entities.DTOs;
 using PriceMonitoring.WebUI.Models;
 using PriceMonitoring.WebUI.ViewModels;
 using System;
@@ -16,6 +17,7 @@ namespace PriceMonitoring.WebUI.Profiles
             // ReverseMap => Two way mapping
             CreateMap<Product, ProductModel>().ReverseMap();
             CreateMap<Product, ProductPriceViewModel>().ReverseMap();
+            CreateMap<ProductWithPriceAndWebsiteDto, ProductWithPriceAndWebsiteViewModel>().ReverseMap();
         }
     }
 }

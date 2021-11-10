@@ -1,5 +1,6 @@
 ﻿using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Entities.Concrete;
+using PriceMonitoring.Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +29,9 @@ namespace PriceMonitoring.Business.Abstract
         IResult Update(Product product);
         IResult Delete(Product product);
         IDataResult<IQueryable<Product>> GetProductsWithPrice();
+        IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> GetProductsWithPriceAndWebsite(Expression<Func<Product, bool>> filter = null);
         IDataResult<Product> GetProductWithPriceById(int id);
-        IDataResult<IQueryable<Product>> Search(string q);
+        IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> Search(string q);
         #endregion
     }
 }

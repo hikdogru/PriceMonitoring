@@ -24,13 +24,26 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         public IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null)
         {
             var products = _context.Products.Include(x => x.ProductPrice);
-            
+
             return filter == null ? products : products.Where(filter);
         }
-
-        public IQueryable<Product> Search(string q)
+        public IQueryable<ProductWithPriceAndWebsiteDto> GetProductsWithPriceAndWebsite(Expression<Func<ProductWithPriceAndWebsiteDto, bool>> filter = null)
         {
-            var products = _context.Products.Where(x => x.Name.Contains(q));
+            var products = from product in GetProductsWithPrice()
+                           join website in _context.Websites on product.WebsiteId equals website.Id
+                           select new ProductWithPriceAndWebsiteDto()
+                           {
+                               Product = product,
+                               Website = website,
+                               ProductPrices = product.ProductPrice
+                           };
+
+            return products;
+        }
+
+        public IQueryable<ProductWithPriceAndWebsiteDto> Search(string q)
+        {
+            var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q));
             return products;
         }
     }

@@ -62,16 +62,15 @@ namespace PriceMonitoring.WebUI.Controllers
             return View(model: productsModel);
         }
 
-        private void SaveDatabase(/*List<ProductModel> products*/)
+        private void SaveDatabase(List<ProductModel> products)
         {
-            //foreach (var model in products)
-            //{
-            //    _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
-            //    var entity = _productService.GetByImageSource(model.Image.ToString());
-            //    var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
-            //    _productPriceService.Add(productPrice: productPrice);
-            //}
-
+            foreach (var model in products)
+            {
+                _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
+                var entity = _productService.GetByImageSource(model.Image.ToString());
+                var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
+                _productPriceService.Add(productPrice: productPrice);
+            }
 
         }
 

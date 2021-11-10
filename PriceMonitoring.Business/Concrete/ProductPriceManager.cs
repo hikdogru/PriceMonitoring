@@ -91,5 +91,10 @@ namespace PriceMonitoring.Business.Concrete
             _unitOfWork.Save();
             return new SuccessResult(message: Messages.ProductPricesUpdated);
         }
+
+        public IDataResult<IQueryable<ProductPrice>> GetProductsWithPriceAndWebsite()
+        {
+            return new SuccessDataResult<IQueryable<ProductPrice>>(_unitOfWork.ProductPrices.GetProductsWithPriceAndWebsite(), message: Messages.ProductPricesListed);
+        }
     }
 }
