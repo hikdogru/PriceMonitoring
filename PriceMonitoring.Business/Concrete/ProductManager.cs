@@ -31,7 +31,7 @@ namespace PriceMonitoring.Business.Concrete
                 return new SuccessResult(message: Messages.ProductAdded);
             }
 
-            return new ErrorResult(message: "Error");
+            return new ErrorResult(message: Messages.ProductIsExist);
             
         }
 
@@ -68,7 +68,13 @@ namespace PriceMonitoring.Business.Concrete
 
         public IDataResult<Product> GetById(int id)
         {
-            return new SuccessDataResult<Product>(_unitOfWork.Products.Get(x => x.Id == id), message: Messages.ProductListed);
+            var product = _unitOfWork.Products.Get(x => x.Id == id);
+            if (product == null)
+            {
+                return new ErrorDataResult<Product>(product, message: Messages.ProductSearchNotExist);
+            }
+
+            return new SuccessDataResult<Product>(product, message: Messages.ProductListed);
         }
 
         public async Task<IDataResult<Product>> GetByIdAsync(int id)
@@ -88,7 +94,7 @@ namespace PriceMonitoring.Business.Concrete
 
         public IDataResult<IQueryable<Product>> GetProductsWithPrice()
         {
-            return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetProductsWithPrice(), message: Messages.ProductListed);
+            return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetProductsWithPrice(), message: Messages.ProductsListed);
         }
 
         public IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> GetProductsWithPriceAndWebsite(Expression<Func<Product, bool>> filter = null)
