@@ -28,7 +28,7 @@ namespace PriceMonitoring.Api.Controllers
 
         #endregion
 
-
+        #region methods
 
         [HttpGet(Name = "getallproducts")]
         public IActionResult GetAllProducts()
@@ -55,55 +55,45 @@ namespace PriceMonitoring.Api.Controllers
         [HttpPost]
         public IActionResult Add(ProductCreateDto productCreateDto)
         {
-            if (ModelState.IsValid)
+            var product = _mapper.Map<Product>(productCreateDto);
+            var result = _productService.Add(product);
+            if (result.Success)
             {
-                var product = _mapper.Map<Product>(productCreateDto);
-                var result = _productService.Add(product);
-                if (result.Success)
-                {
-                    return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
-                }
-                return BadRequest(result);
+                return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
             }
-
-            return BadRequest();
+            return BadRequest(result);
         }
 
         [HttpPut("{id}")]
         public IActionResult Update(int id, ProductUpdateDto productUpdateDto)
         {
-            if (ModelState.IsValid)
+            var productResult = _productService.GetById(id: id);
+            if (!productResult.Success)
             {
-                var isExistProductInDatabase = _productService.GetById(id: id);
-                if (isExistProductInDatabase.Success)
-                {
-                    var product = _mapper.Map<Product>(productUpdateDto);
-                    var result = _productService.Update(product);
-                    if (result.Success)
-                    {
-                        return NoContent();
-                    }
-                }
-                return BadRequest(isExistProductInDatabase.Message);
-
+                return BadRequest(productResult);
             }
-            return BadRequest();
+            _mapper.Map(productUpdateDto, productResult.Data);
+            var result = _productService.Update(productResult.Data);
+            if (result.Success)
+            {
+                return NoContent();
+            }
+
+            return BadRequest(result);
         }
 
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            var isExistProductInDatabase = _productService.GetById(id: id);
-            if (isExistProductInDatabase.Success)
+            var result = _productService.Delete(new Product { Id = id });
+            if (result.Success)
             {
-                var result = _productService.Delete(isExistProductInDatabase.Data);
-                if (result.Success)
-                {
-                    return NoContent();
-                }
-                return BadRequest(result.Message);                                                  
+                return NoContent();
             }
-            return NotFound();
+            return BadRequest(result);
+
         }
+
+        #endregion
     }
 }

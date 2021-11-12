@@ -80,7 +80,7 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult AddToCompare(int id)
         {
-            List<string> dates = new() { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021", "11/9/2021" };
+            List<string> dates = new() { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021", "11/9/2021", "11/10/2021" };
            
             var product = _productService.GetProductWithPriceById(id: id).Data;
             if (dates.Count > product.ProductPrice.Count)

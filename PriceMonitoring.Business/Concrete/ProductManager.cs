@@ -1,5 +1,8 @@
-﻿using PriceMonitoring.Business.Abstract;
+﻿using FluentValidation.Results;
+using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.Constants;
+using PriceMonitoring.Business.ValidationRules.FluentValidation;
+using PriceMonitoring.Core.CrossCuttingConcerns.FluentValidation;
 using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Entities.Concrete;
@@ -15,15 +18,33 @@ namespace PriceMonitoring.Business.Concrete
 {
     public class ProductManager : IProductService
     {
+        #region fields
+
         private readonly IUnitOfWork _unitOfWork;
+
+        #endregion
+
+        #region ctor
+
         public ProductManager(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
+        #endregion
+
+        #region methods
         public IResult Add(Product product)
         {
+            var sb = new StringBuilder();
             var isProductExist = IsProductExistInDatabase(product: product);
+            var validationResult = IsProductValidate(product: product);
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
             if (isProductExist == false)
             {
                 _unitOfWork.Products.Add(entity: product);
@@ -32,7 +53,7 @@ namespace PriceMonitoring.Business.Concrete
             }
 
             return new ErrorResult(message: Messages.ProductIsExist);
-            
+
         }
 
         public async Task<IResult> AddAsync(Product product)
@@ -44,9 +65,15 @@ namespace PriceMonitoring.Business.Concrete
 
         public IResult Delete(Product product)
         {
-            _unitOfWork.Products.Delete(entity: product);
-            _unitOfWork.Save();
-            return new SuccessResult(message: Messages.ProductDeleted);
+            var isExistProductInDatabase = GetById(id: product.Id);
+            if (isExistProductInDatabase.Success)
+            {
+                _unitOfWork.Products.Delete(entity: isExistProductInDatabase.Data);
+                _unitOfWork.Save();
+                return new SuccessResult(message: Messages.ProductDeleted);
+            }
+
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
         }
 
         public async Task<IResult> DeleteAsync(Product product)
@@ -120,21 +147,56 @@ namespace PriceMonitoring.Business.Concrete
 
         public IResult Update(Product product)
         {
-            _unitOfWork.Products.Update(entity: product);
-            _unitOfWork.Save();
-            return new SuccessResult(message: Messages.ProductUpdated);
+            var isProductExist = GetById(id: product.Id).Success;
+            var validationResult = IsProductValidate(product: product);
+            var sb = new StringBuilder();
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
+            if (isProductExist)
+            {
+                _unitOfWork.Products.Update(entity: product);
+                _unitOfWork.Save();
+                return new SuccessResult(message: Messages.ProductUpdated);
+            }
+
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
+
         }
 
         public async Task<IResult> UpdateAsync(Product product)
         {
-            await _unitOfWork.Products.UpdateAsync(entity: product);
-            await _unitOfWork.SaveAsync();
-            return new SuccessResult(message: Messages.ProductUpdated);
+            var isProductExist = await GetByIdAsync(id: product.Id);
+            var validationResult = IsProductValidate(product: product);
+            var sb = new StringBuilder();
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+            if (isProductExist.Success)
+            {
+                await _unitOfWork.Products.UpdateAsync(entity: product);
+                await _unitOfWork.SaveAsync();
+                return new SuccessResult(message: Messages.ProductUpdated);
+            }
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
+
         }
 
         private bool IsProductExistInDatabase(Product product)
         {
             return _unitOfWork.Products.GetAll(x => x.Name == product.Name && x.Image == product.Image).Count() > 0;
         }
+
+        public ValidationResult IsProductValidate(Product product)
+        {
+            return ValidationTool.Validate(new ProductValidator(), product);
+        }
+
+        #endregion
     }
 }

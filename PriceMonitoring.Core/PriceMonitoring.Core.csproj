@@ -6,6 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.11" />
+	  <PackageReference Include="FluentValidation.AspNetCore" Version="10.3.4" />
+
   </ItemGroup>
 
 </Project>

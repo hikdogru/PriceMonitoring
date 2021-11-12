@@ -27,7 +27,8 @@ namespace PriceMonitoring.Core.Data.EntityFramework
 
         public async Task DeleteAsync(TEntity entity)
         {
-            Table.Remove(entity);
+            var deletedEntity = _context.Entry(entity);
+            deletedEntity.State = EntityState.Deleted;
         }
 
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filter)
@@ -42,7 +43,8 @@ namespace PriceMonitoring.Core.Data.EntityFramework
 
         public async Task UpdateAsync(TEntity entity)
         {
-            Table.Update(entity);
+            var updatedEntity = _context.Entry(entity);
+            updatedEntity.State = EntityState.Modified;
         }
 
         public IQueryable<TEntity> GetAll(Expression<Func<TEntity, bool>> filter = null)
@@ -62,12 +64,14 @@ namespace PriceMonitoring.Core.Data.EntityFramework
 
         public void Update(TEntity entity)
         {
-            Table.Update(entity);
+            var updatedEntity = _context.Entry(entity);
+            updatedEntity.State = EntityState.Modified;
         }
 
         public void Delete(TEntity entity)
         {
-            Table.Remove(entity);
+            var deletedEntity = _context.Entry(entity);
+            deletedEntity.State = EntityState.Deleted;
         }
     }
 }

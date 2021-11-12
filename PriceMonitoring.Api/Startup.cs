@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,9 +12,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.Concrete;
+using PriceMonitoring.Business.ValidationRules.FluentValidation;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Data.Concrete.EntityFramework;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
+using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,9 +55,13 @@ namespace PriceMonitoring.Api
             {
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
                 options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-            });
+            }).AddFluentValidation();
 
-           
+            // Fluentvalidation
+            services.AddTransient<IValidator<Product>, ProductValidator>();
+
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "PriceMonitoring.Api", Version = "v1" });
