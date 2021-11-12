@@ -10,6 +10,7 @@ using PriceMonitoring.Business.Concrete;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Data.Concrete.EntityFramework;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
+using PriceMonitoring.WebUI.TimedService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -43,9 +44,14 @@ namespace PriceMonitoring.WebUI
             //Automapper
             services.AddAutoMapper(typeof(Startup));
 
+            services.AddHostedService<TimedHostedService>();
+
+
             services.AddControllersWithViews()
             .AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
+
 
         }
 
