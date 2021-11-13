@@ -80,14 +80,12 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult AddToCompare(int id)
         {
-            List<string> dates = new() { "11/4/2021", "11/5/2021", "11/6/2021", "11/7/2021", "11/8/2021", "11/9/2021", "11/10/2021" , "11/11/2021" };
-           
+            var dates = _productPriceService.GetAll().Data.GroupBy(x => x.SavedDate.Date).Select(x => x.Key.ToShortDateString()).ToList();
             var product = _productService.GetProductWithPriceById(id: id).Data;
             if (dates.Count > product.ProductPrice.Count)
             {
                 List<string> dates2 = new();
                 var productList = _productService.GetProductWithPriceById(product.Id).Data;
-
                 foreach (var item in productList.ProductPrice)
                 {
                     dates2.Add(item.SavedDate.Date.ToString("MM/d/yyyy"));
@@ -107,9 +105,7 @@ namespace PriceMonitoring.WebUI.Controllers
             }
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
-
             productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => prices.Add(x.Price));
-
             if (_dates.Count == 0 || _dates.Count < prices.Count)
             {
                 productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => _dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
@@ -132,7 +128,7 @@ namespace PriceMonitoring.WebUI.Controllers
                                                                         PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                                                                         ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
                                                                     });
-            
+
             return View("Compare", model: _searchResults.ToList());
         }
 

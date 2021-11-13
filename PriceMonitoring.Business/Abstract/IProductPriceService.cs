@@ -1,4 +1,5 @@
-﻿using PriceMonitoring.Core.Utilities.Results;
+﻿using FluentValidation.Results;
+using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,8 @@ namespace PriceMonitoring.Business.Abstract
         IResult Update(ProductPrice productPrice);
         IResult Delete(ProductPrice productPrice);
         IDataResult<IQueryable<ProductPrice>> GetProductsWithPriceAndWebsite();
+        bool IsProductPriceExistInDatabase(ProductPrice productPrice);
+        ValidationResult IsProductPriceValid(ProductPrice productPrice);
         #endregion
     }
 }

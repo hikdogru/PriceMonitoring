@@ -44,34 +44,14 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             var stopwatch = Stopwatch.StartNew();
 
-            //var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
-            //SaveDatabase(products: productsFromMigros);
-
-            //var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
-            //SaveDatabase(productsFromA101);
             var productsModel = new List<ProductModel>();
             var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 1).Take(12).ToList();
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
-
-            //productsFromMigros.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
-            //productsFromA101.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
             ViewBag.ProductCount = productsModel.Count();
             stopwatch.Stop();
             ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
             
             return View(model: productsModel);
-        }
-
-        private void SaveDatabase(List<ProductModel> products)
-        {
-            foreach (var model in products)
-            {
-                _productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
-                var entity = _productService.GetByImageSource(model.Image.ToString());
-                var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
-                _productPriceService.Add(productPrice: productPrice);
-            }
-
         }
 
         public IActionResult Privacy()

@@ -2,17 +2,14 @@
 @{
 
     ViewData["Title"] = "Detail";
-
-
     var product = Model;
 
 }
+<div class="text-center" style="width:200px;margin:0 auto">
 
-<div class="col-md-3">
     <img src="@product.Image" alt="Product Image" />
     <h5>@product.Name</h5>
     <h5>@(product.ProductPrice.ToList()[0].Price )</h5>
-
 
 </div>
 
@@ -21,83 +18,83 @@
 
 @section Scripts
 {
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    <script src="https://code.highcharts.com/modules/series-label.js"></script>
-    <script src="https://code.highcharts.com/modules/exporting.js"></script>
-    <script src="https://code.highcharts.com/modules/export-data.js"></script>
-    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 
-    <figure class="highcharts-figure">
-        <div id="container"></div>
+<figure class="highcharts-figure">
+    <div id="container"></div>
 
-    </figure>
+</figure>
 
-    <script>
-
-
-        var prices =  @Html.Raw(ViewData["Prices"]);
-        var dates =  @Html.Raw(ViewData["Dates"]);
+<script>
 
 
+    var prices =  @Html.Raw(ViewData["Prices"]);
+    var dates =  @Html.Raw(ViewData["Dates"]);
 
-            Highcharts.chart('container', {
 
+
+        Highcharts.chart('container', {
+
+        title: {
+            text: 'Product price changing, 2021'
+        },
+
+            subtitle: {
+                text: 'Market: Migros'
+        },
+
+        yAxis: {
             title: {
-                text: 'Product price changing, 2021'
+                text: 'Price (TRY)'
+            }
             },
 
-                subtitle: {
-                    text: 'Market: Migros'
+        xAxis: {
+
+
+            categories:  dates
             },
 
-            yAxis: {
-                title: {
-                    text: 'Price (TRY)'
-                }
-                },
+            legend: {
+            layout: 'vertical',
+            align: 'right',
+            verticalAlign: 'middle'
+            },
 
-            xAxis: {
+            plotOptions: {
+            series: {
+                    label: {
+                        connectorAllowed: false,
 
+            }
+            }
+            },
 
-                categories:  dates
-                },
+            series: [{
+                name: '@Html.Raw(product.Name)',
+                data: prices
+            }],
 
-                legend: {
-                layout: 'vertical',
-                align: 'right',
-                verticalAlign: 'middle'
-                },
+            responsive: {
+            rules: [{
+            condition: {
+            maxWidth: 500
+            },
+            chartOptions: {
+            legend: {
+            layout: 'horizontal',
+            align: 'center',
+            verticalAlign: 'bottom'
+            }
+            }
+            }]
+            }
 
-                plotOptions: {
-                series: {
-                        label: {
-                            connectorAllowed: false,
-
-                }
-                }
-                },
-
-                series: [{
-                    name: '@Html.Raw(product.Name)',
-                    data: prices
-                }],
-
-                responsive: {
-                rules: [{
-                condition: {
-                maxWidth: 500
-                },
-                chartOptions: {
-                legend: {
-                layout: 'horizontal',
-                align: 'center',
-                verticalAlign: 'bottom'
-                }
-                }
-                }]
-                }
-
-                });
-    </script>
+            });
+</script>
 
 }

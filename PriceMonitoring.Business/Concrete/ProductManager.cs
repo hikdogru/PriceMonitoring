@@ -163,7 +163,7 @@ namespace PriceMonitoring.Business.Concrete
                 return new SuccessResult(message: Messages.ProductUpdated);
             }
 
-            return new ErrorResult(message: Messages.ProductSearchNotExist);
+            return new ErrorResult(message: Messages.ProductPriceNotExist);
 
         }
 
@@ -189,7 +189,7 @@ namespace PriceMonitoring.Business.Concrete
 
         private bool IsProductExistInDatabase(Product product)
         {
-            return _unitOfWork.Products.GetAll(x => x.Name == product.Name && x.Image == product.Image).Count() > 0;
+            return _unitOfWork.Products.GetAll(x => x.Image == product.Image).Count() > 0;
         }
 
         public ValidationResult IsProductValidate(Product product)

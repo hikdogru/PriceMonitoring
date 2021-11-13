@@ -21,5 +21,8 @@ namespace PriceMonitoring.Business.Constants
         public static string ProductPricesDeleted = "ProductPrices is deleted successfuly";
         public static string ProductPricesListed = "ProductPricess are listed successfuly";
         public static string ProductPriceListed = "ProductPrices is listed successfuly";
+        public static string ProductPriceIsExist = "Product price is already exist in database!";
+        public static string ProductPriceNotExist = "Product price is not exist!";
+
     }
 }

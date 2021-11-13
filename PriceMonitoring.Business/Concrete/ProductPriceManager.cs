@@ -1,5 +1,8 @@
-﻿using PriceMonitoring.Business.Abstract;
+﻿using FluentValidation.Results;
+using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.Constants;
+using PriceMonitoring.Business.ValidationRules.FluentValidation;
+using PriceMonitoring.Core.CrossCuttingConcerns.FluentValidation;
 using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Entities.Concrete;
@@ -14,16 +17,41 @@ namespace PriceMonitoring.Business.Concrete
 {
     public class ProductPriceManager : IProductPriceService
     {
+        #region fields
+
         private readonly IUnitOfWork _unitOfWork;
+
+        #endregion
+
+        #region ctor
+
         public ProductPriceManager(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
+
+        #endregion
+
+        #region methods
         public async Task<IResult> AddAsync(ProductPrice productPrice)
         {
-            await _unitOfWork.ProductPrices.AddAsync(entity: productPrice);
-            await _unitOfWork.SaveAsync();
-            return new SuccessResult(message: Messages.ProductPricesAdded);
+            var sb = new StringBuilder();
+            var isProductPriceExist = IsProductPriceExistInDatabase(productPrice: productPrice);
+            var validationResult = IsProductPriceValid(productPrice: productPrice);
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
+            if (isProductPriceExist == false)
+            {
+                await _unitOfWork.ProductPrices.AddAsync(entity: productPrice);
+                await _unitOfWork.SaveAsync();
+                return new SuccessResult(message: Messages.ProductPricesAdded);
+            }
+
+            return new ErrorResult(message: Messages.ProductPriceIsExist);
         }
 
         public async Task<IResult> DeleteAsync(ProductPrice productPrice)
@@ -51,9 +79,25 @@ namespace PriceMonitoring.Business.Concrete
 
         public async Task<IResult> UpdateAsync(ProductPrice productPrice)
         {
-            await _unitOfWork.ProductPrices.UpdateAsync(entity: productPrice);
-            await _unitOfWork.SaveAsync();
-            return new SuccessResult(message: Messages.ProductPricesUpdated);
+            var isProductPriceExist = GetById(id: productPrice.Id).Success;
+            var validationResult = IsProductPriceValid(productPrice: productPrice);
+            var sb = new StringBuilder();
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
+            if (isProductPriceExist)
+            {
+                await _unitOfWork.ProductPrices.UpdateAsync(entity: productPrice);
+                await _unitOfWork.SaveAsync();
+                return new SuccessResult(message: Messages.ProductPricesUpdated);
+            }
+
+
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
+
         }
 
         public IDataResult<IQueryable<ProductPrice>> GetAll()
@@ -73,16 +117,46 @@ namespace PriceMonitoring.Business.Concrete
 
         public IResult Add(ProductPrice productPrice)
         {
-            _unitOfWork.ProductPrices.Add(entity: productPrice);
-            _unitOfWork.Save();
-            return new SuccessResult(message: Messages.ProductPricesAdded);
+            var sb = new StringBuilder();
+            var isProductPriceExist = IsProductPriceExistInDatabase(productPrice: productPrice);
+            var validationResult = IsProductPriceValid(productPrice: productPrice);
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
+            if (isProductPriceExist == false)
+            {
+                _unitOfWork.ProductPrices.Add(entity: productPrice);
+                _unitOfWork.Save();
+                return new SuccessResult(message: Messages.ProductPricesAdded);
+            }
+
+            return new ErrorResult(message: Messages.ProductPriceIsExist);
+
         }
 
         public IResult Update(ProductPrice productPrice)
         {
-            _unitOfWork.ProductPrices.Update(entity: productPrice);
-            _unitOfWork.Save();
-            return new SuccessResult(message: Messages.ProductPricesUpdated);
+            var isProductPriceExist = GetById(id: productPrice.Id).Success;
+            var validationResult = IsProductPriceValid(productPrice: productPrice);
+            var sb = new StringBuilder();
+            if (!validationResult.IsValid)
+            {
+                validationResult.Errors.ForEach(x => sb.Append(x.ErrorMessage));
+                return new ErrorResult(message: sb.ToString());
+            }
+
+            if (isProductPriceExist)
+            {
+                _unitOfWork.ProductPrices.Update(entity: productPrice);
+                _unitOfWork.Save();
+                return new SuccessResult(message: Messages.ProductPricesUpdated);
+            }
+
+
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
         }
 
         public IResult Delete(ProductPrice productPrice)
@@ -96,5 +170,18 @@ namespace PriceMonitoring.Business.Concrete
         {
             return new SuccessDataResult<IQueryable<ProductPrice>>(_unitOfWork.ProductPrices.GetProductsWithPriceAndWebsite(), message: Messages.ProductPricesListed);
         }
+
+        public bool IsProductPriceExistInDatabase(ProductPrice productPrice)
+        {
+            return GetAll().Data.Where(x => x.ProductId == productPrice.ProductId &&
+                                            x.SavedDate.Date == productPrice.SavedDate.Date).Count() > 0;
+        }
+
+        public ValidationResult IsProductPriceValid(ProductPrice productPrice)
+        {
+            return ValidationTool.Validate(new ProductPriceValidator(), productPrice);
+        }
+
+        #endregion
     }
 }

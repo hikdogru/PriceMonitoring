@@ -24,10 +24,12 @@ namespace PriceMonitoring.WebUI.TimedService
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Timed Hosted Service running.");
+            if (DateTime.Now.Hour == 17 && DateTime.Now.Minute == 18)
+            {
+                _timer = new Timer(DoWork, null, TimeSpan.Zero,
+                                TimeSpan.FromHours(24));
+            }
 
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                TimeSpan.FromHours(24));
 
             return Task.CompletedTask;
         }
