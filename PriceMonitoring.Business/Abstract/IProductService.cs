@@ -34,6 +34,7 @@ namespace PriceMonitoring.Business.Abstract
         IDataResult<Product> GetProductWithPriceById(int id);
         IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> Search(string q);
         ValidationResult IsProductValidate(Product product);
+        IDataResult<IQueryable<ProductListDto>> GetProductListDto();
         #endregion
     }
 }

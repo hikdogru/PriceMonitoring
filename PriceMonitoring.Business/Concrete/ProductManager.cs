@@ -88,6 +88,11 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<IQueryable<Product>>(_unitOfWork.Products.GetAll());
         }
 
+        public IDataResult<IQueryable<ProductListDto>> GetProductListDto()
+        {
+            return new SuccessDataResult<IQueryable<ProductListDto>>(_unitOfWork.Products.GetProductListDto(), message: Messages.ProductsListed);
+        }
+
         public async Task<IDataResult<IQueryable<Product>>> GetAllAsync()
         {
             return new SuccessDataResult<IQueryable<Product>>(await _unitOfWork.Products.GetAllAsync(), message: Messages.ProductsListed);

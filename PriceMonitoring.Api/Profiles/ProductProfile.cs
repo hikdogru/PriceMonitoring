@@ -8,8 +8,9 @@ namespace PriceMonitoring.Api.Profiles
     {
         public ProductProfile()
         {
-            CreateMap<Product, ProductCreateDto>().ReverseMap();   
+            CreateMap<Product, ProductCreateDto>().ReverseMap();
             CreateMap<Product, ProductUpdateDto>().ReverseMap();
+            CreateMap<Product, ProductListDto>().ReverseMap();
         }
     }
 }

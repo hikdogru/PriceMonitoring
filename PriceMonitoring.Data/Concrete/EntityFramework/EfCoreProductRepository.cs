@@ -41,6 +41,19 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
             return products;
         }
 
+        public IQueryable<ProductListDto> GetProductListDto(Expression<Func<ProductListDto, bool>> filter = null)
+        {
+            var products = from product in _context.Products
+                           select new ProductListDto()
+                           {
+                               Id = product.Id,
+                               Name = product.Name,
+                               Image = product.Image,
+                               WebsiteId = product.WebsiteId
+                           };
+            return filter == null ? products : products.Where(filter);
+        }
+
         public IQueryable<ProductWithPriceAndWebsiteDto> Search(string q)
         {
             var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q));

@@ -114,7 +114,7 @@ namespace PriceMonitoring.WebUI.Controllers
             var isExistProductInList = false;
             if (_chartProducts.Count > 0)
             {
-                isExistProductInList = _chartProducts.Select(x => x.Name == product.Name).First();
+                isExistProductInList = _chartProducts.Where(x => x.Name == product.Name).Count() > 0;
             }
             if (isExistProductInList == false)
             {

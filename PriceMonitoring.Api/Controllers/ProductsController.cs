@@ -33,7 +33,7 @@ namespace PriceMonitoring.Api.Controllers
         [HttpGet(Name = "getallproducts")]
         public IActionResult GetAllProducts()
         {
-            var result = _productService.GetAll();
+            var result = _productService.GetProductListDto();
             if (result.Success)
             {
                 return Ok(result);

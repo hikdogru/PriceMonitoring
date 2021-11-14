@@ -16,7 +16,7 @@ namespace PriceMonitoring.Entities.Concrete
         {
             get
             {
-                return _name.Length > 25 ? _name.Substring(0, 24) : _name;
+                return _name.Length > 25 ? _name.Substring(0, 21) + "..." : _name;
             }
             set
             {
