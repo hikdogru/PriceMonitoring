@@ -57,10 +57,7 @@ namespace PriceMonitoring.Api
                 options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
             }).AddFluentValidation();
 
-            // Fluentvalidation
-            services.AddTransient<IValidator<Product>, ProductValidator>();
-
-
+            
 
             services.AddSwaggerGen(c =>
             {

@@ -24,5 +24,15 @@ namespace PriceMonitoring.Business.Constants
         public static string ProductPriceIsExist = "Product price is already exist in database!";
         public static string ProductPriceNotExist = "Product price is not exist!";
 
+        public static string UserRegistered = "User is registered successfuly";
+        public static string UserUpdated = "User is updated successfuly";
+        public static string UserDeleted = "User is deleted successfuly";
+        public static string UsersListed = "Users are listed successfuly";
+        public static string UserListed = "User is listed successfuly";
+        public static string UserIsExist = "User is already exist in database!";
+        public static string UserIsNotExist = "User is not exist!";
+
+
+
     }
 }
