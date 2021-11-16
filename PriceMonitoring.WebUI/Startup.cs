@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.Concrete;
+using PriceMonitoring.Business.ValidationRules.FluentValidation;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Data.Concrete.EntityFramework;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
@@ -36,6 +38,7 @@ namespace PriceMonitoring.WebUI
             // Dependency Injection
             services.AddScoped<IProductService, ProductManager>();
             services.AddScoped<IProductPriceService, ProductPriceManager>();
+            services.AddScoped<IUserService, UserManager>();
 
             // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -51,8 +54,7 @@ namespace PriceMonitoring.WebUI
             .AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-
-
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -2,6 +2,50 @@
 
 
 
+@section Styles
+{
+<style>
+    div.mb-3 > span {
+        color: red;
+    }
+</style>
+}
 
 
+<h3>Register page</h3>
+
+<div asp-validation-summary="ModelOnly"></div>
+<form method="post" asp-action="Register">
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">Firstname</label>
+        <input asp-for="FirstName" class="form-control">
+        <span asp-validation-for="FirstName"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">LastName</label>
+        <input asp-for="LastName" class="form-control">
+        <span asp-validation-for="LastName"></span>
+
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">Email address</label>
+        <input class="form-control" asp-for="Email">
+        <span asp-validation-for="Email"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label"> Password</label>
+        <input asp-for="Password" type="password" class="form-control">
+        <span asp-validation-for="Password"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    @if (ViewData["Message"] != null)
+    {
+        <span class="alert alert-danger m-3">@(ViewData["Message"] as string)</span>
+    }
+
+</form>
 

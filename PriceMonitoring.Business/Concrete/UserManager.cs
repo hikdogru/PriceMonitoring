@@ -101,6 +101,7 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<User>(data: user, message: Messages.UserListed);
         }
 
+       
         public async Task<IDataResult<User>> GetByEmailAsync(string email)
         {
             var user = await _unitOfWork.Users.GetAsync(x => x.Email == email);
@@ -178,7 +179,7 @@ namespace PriceMonitoring.Business.Concrete
 
         public bool IsUserExistInDatabase(User user)
         {
-            return _unitOfWork.Users.Get(x => x.Email == user.Email) == null;
+            return _unitOfWork.Users.Get(x => x.Email == user.Email) != null;
         }
 
         public ValidationResult IsUserValid(User user)
