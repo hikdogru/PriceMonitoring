@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -21,15 +22,21 @@ namespace PriceMonitoring.WebUI.Controllers
         private static List<string> _dates = new();
         private readonly IProductService _productService;
         private readonly IProductPriceService _productPriceService;
+        private readonly IUserService _userService;
+        private readonly IProductSubscriptionService _productSubscriptionService;
         private readonly IMapper _mapper;
         #endregion
 
         #region ctor
-        public ProductController(IProductService productService, IMapper mapper, IProductPriceService productPriceService)
+        public ProductController(IProductService productService,
+            IMapper mapper, IProductPriceService productPriceService,
+            IUserService userService, IProductSubscriptionService productSubscriptionService)
         {
             _productService = productService;
             _mapper = mapper;
             _productPriceService = productPriceService;
+            _userService = userService;
+            _productSubscriptionService = productSubscriptionService;
         }
         #endregion
 
@@ -132,6 +139,15 @@ namespace PriceMonitoring.WebUI.Controllers
             return View("Compare", model: _searchResults.ToList());
         }
 
+
+        [HttpPost]
+        public IActionResult SubscribeToProduct(int id)
+        {
+            var product = _productService.GetProductWithPriceById(id);
+            var user = _userService.GetByEmail(HttpContext.Session.GetString("email"));
+            _productSubscriptionService.Add(new ProductSubscription { ProductId = id, ProductPriceId = product.Data.ProductPrice.LastOrDefault().Id, UserId = user.Data.Id });
+            return RedirectToAction(nameof(Compare));
+        }
         #endregion
     }
 }

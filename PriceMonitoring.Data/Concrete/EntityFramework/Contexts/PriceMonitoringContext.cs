@@ -15,6 +15,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
         public DbSet<ProductPrice> ProductPrices { get; set; }
         public DbSet<Website> Websites { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<ProductSubscription> ProductSubscriptions { get; set; }
 
         public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
         {
@@ -31,6 +32,8 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
             modelBuilder.ApplyConfiguration(new ProductPriceConfiguration());
             modelBuilder.ApplyConfiguration(new WebsiteConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
+            modelBuilder.ApplyConfiguration(new ProductSubscriptionConfiguration());
+
         }
     }
 }

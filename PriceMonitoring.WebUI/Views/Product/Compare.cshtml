@@ -7,6 +7,8 @@
         chartProduct = JsonConvert.DeserializeObject<List<ChartJsonModel>>(chartProducts.ToString());
 
     }
+
+    var isUserAuthenticated = SessionModel.IsSessionExist(key: "email", httpContext: Context);
 }
 
 
@@ -41,6 +43,10 @@
                     else
                     {
                         <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                    }
+                    @if(isUserAuthenticated)
+                    {
+                        <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct"> Subscribe </button>
                     }
 
                 </form>

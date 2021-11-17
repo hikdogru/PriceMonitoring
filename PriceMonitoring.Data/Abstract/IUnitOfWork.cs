@@ -12,6 +12,7 @@ namespace PriceMonitoring.Data.Abstract
         IProductRepository Products { get; }
         IProductPriceRepository ProductPrices { get; }
         IUserRepository Users { get; }
+        IProductSubscriptionRepository ProductSubscriptions { get; }
         Task SaveAsync();
         void Save();
     }

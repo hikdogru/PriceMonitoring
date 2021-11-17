@@ -39,6 +39,7 @@ namespace PriceMonitoring.WebUI
             services.AddScoped<IProductService, ProductManager>();
             services.AddScoped<IProductPriceService, ProductPriceManager>();
             services.AddScoped<IUserService, UserManager>();
+            services.AddScoped<IProductSubscriptionService, ProductSubscriptionManager>();
 
             // UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -49,12 +50,15 @@ namespace PriceMonitoring.WebUI
 
             services.AddHostedService<TimedHostedService>();
 
+          
+            // Session
+            services.AddSession(option => option.IdleTimeout = TimeSpan.FromMinutes(20));
 
             services.AddControllersWithViews()
-            .AddNewtonsoftJson(options =>
-            options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+          .AddNewtonsoftJson(options =>
+          options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +80,9 @@ namespace PriceMonitoring.WebUI
             app.UseRouting();
 
             app.UseAuthorization();
+
+            // Session
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {

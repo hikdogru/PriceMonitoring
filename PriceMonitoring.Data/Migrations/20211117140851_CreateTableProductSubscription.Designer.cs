@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
 
 namespace PriceMonitoring.Data.Migrations
 {
     [DbContext(typeof(PriceMonitoringContext))]
-    partial class PriceMonitoringContextModelSnapshot : ModelSnapshot
+    [Migration("20211117140851_CreateTableProductSubscription")]
+    partial class CreateTableProductSubscription
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -14,6 +14,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         private EfCoreProductRepository _productRepository;
         private EfCoreProductPriceRepository _productPriceRepository;
         private EfCoreUserRepository _userRepository;
+        private EfCoreProductSubscriptionRepository _productSubscriptionRepository;
 
         public UnitOfWork(PriceMonitoringContext context)
         {
@@ -22,6 +23,9 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         public IProductRepository Products => _productRepository = _productRepository ?? new EfCoreProductRepository(_context);
         public IProductPriceRepository ProductPrices => _productPriceRepository = _productPriceRepository ?? new EfCoreProductPriceRepository(_context);
         public IUserRepository Users => _userRepository = _userRepository ?? new EfCoreUserRepository(_context);
+        public IProductSubscriptionRepository ProductSubscriptions => _productSubscriptionRepository = _productSubscriptionRepository ??
+            new EfCoreProductSubscriptionRepository(_context);
+
         public void Dispose()
         {
             _context.Dispose();

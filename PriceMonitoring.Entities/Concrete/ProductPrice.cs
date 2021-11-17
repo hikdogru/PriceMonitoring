@@ -30,5 +30,7 @@ namespace PriceMonitoring.Entities.Concrete
 
         }
 
+
+
     }
 }

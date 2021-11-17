@@ -33,12 +33,12 @@ namespace PriceMonitoring.WebUI.TimedService
 
         private void DoWork(object state)
         {
-            
-            //var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
-            //SaveDatabase(products: productsFromMigros);
 
-            //var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
-            //SaveDatabase(productsFromA101);
+            var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
+            SaveDatabase(products: productsFromMigros);
+
+            var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
+            SaveDatabase(productsFromA101);
 
         }
 

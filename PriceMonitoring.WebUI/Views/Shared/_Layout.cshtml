@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var isUserAuthenticated = SessionModel.IsSessionExist(key: "email", httpContext: Context);
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -29,10 +33,22 @@
 
                     </ul>
 
-                    <div class="d-flex">
-                        <a class="btn btn-primary m-2" href="/User/Register">Register</a>
-                        <a class="btn btn-success m-2" href="/User/Login">Login</a>
-                    </div>
+                    @if (!isUserAuthenticated)
+                    {
+                        <div class="d-flex">
+                            <a class="btn btn-primary m-2" href="/User/Register">Register</a>
+                            <a class="btn btn-success m-2" href="/User/Login">Login</a>
+                        </div>
+                    }
+                    else
+                    {
+                        string firstname = Context.Session.GetString("firstName");
+                        <div class="m-auto">
+                            <span>Welcome @firstname</span>
+                        </div>
+                        <a class="btn btn-secondary m-2" asp-action="Logout" asp-controller="User">Logout</a>
+                    }
+
                 </div>
             </div>
         </nav>

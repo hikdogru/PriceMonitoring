@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.ValidationRules.FluentValidation;
@@ -40,10 +41,12 @@ namespace PriceMonitoring.WebUI.Controllers
             result.AddToModelState(ModelState, null);
             if (result.IsValid)
             {
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                user.Password = passwordHash;
                 var addedResult = _userService.Add(user: user);
                 if (addedResult.Success)
                 {
-                    return RedirectToAction(nameof(Index) , "Home");
+                    return RedirectToAction(nameof(Index), "Home");
                 }
                 ViewData["Message"] = addedResult.Message;
                 return View();
@@ -60,6 +63,7 @@ namespace PriceMonitoring.WebUI.Controllers
         public IActionResult Login(LoginModel model)
         {
             var loginDto = _mapper.Map<UserLoginDto>(model);
+            // Manuel validation
             var result = ValidationTool.Validate(new UserLoginValidator(), loginDto); ;
             result.AddToModelState(ModelState, null);
             if (result.IsValid)
@@ -67,9 +71,10 @@ namespace PriceMonitoring.WebUI.Controllers
                 var user = _userService.GetByEmail(loginDto.Email);
                 if (user.Success)
                 {
-                    var confirmPassword = user.Data.Password == loginDto.Password;
-                    if (confirmPassword)
+                    var passwordVerified = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Data.Password);
+                    if (passwordVerified)
                     {
+                        SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
                         return RedirectToAction(nameof(Index), "Home");
                     }
                 }
@@ -78,6 +83,12 @@ namespace PriceMonitoring.WebUI.Controllers
             }
 
             return View();
+        }
+
+        public IActionResult Logout()
+        {
+            SessionModel.ClearUserSession(httpContext: HttpContext);
+            return RedirectToAction(nameof(Index), "Home");
         }
     }
 }
