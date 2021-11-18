@@ -33,7 +33,6 @@ namespace PriceMonitoring.WebUI.TimedService
 
         private void DoWork(object state)
         {
-
             var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
             SaveDatabase(products: productsFromMigros);
 
@@ -58,8 +57,6 @@ namespace PriceMonitoring.WebUI.TimedService
 
         public Task StopAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Timed Hosted Service is stopping.");
-
             _timer?.Change(Timeout.Infinite, 0);
 
             return Task.CompletedTask;

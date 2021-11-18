@@ -12,6 +12,7 @@ using PriceMonitoring.Business.ValidationRules.FluentValidation;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Data.Concrete.EntityFramework;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
+using PriceMonitoring.WebUI.EmailService;
 using PriceMonitoring.WebUI.TimedService;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,14 @@ namespace PriceMonitoring.WebUI
             // Add dbcontext
             services.AddDbContext<PriceMonitoringContext>(option => option.UseSqlServer(Configuration.GetConnectionString("PriceMonitoringConnectionString")));
 
+
+            // Email configuration
+            var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
+            services.AddSingleton(emailConfig);
+
+            // Email sender
+            services.AddScoped<IEmailSender, EmailSender>();
+
             // Dependency Injection
             services.AddScoped<IProductService, ProductManager>();
             services.AddScoped<IProductPriceService, ProductPriceManager>();
@@ -50,7 +59,7 @@ namespace PriceMonitoring.WebUI
 
             services.AddHostedService<TimedHostedService>();
 
-          
+
             // Session
             services.AddSession(option => option.IdleTimeout = TimeSpan.FromMinutes(20));
 

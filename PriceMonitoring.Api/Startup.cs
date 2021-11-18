@@ -39,6 +39,7 @@ namespace PriceMonitoring.Api
             // Add dbcontext
             services.AddDbContext<PriceMonitoringContext>(option => option.UseSqlServer(Configuration.GetConnectionString("PriceMonitoringConnectionString")));
 
+
             // Dependency Injection
             services.AddScoped<IProductService, ProductManager>();
             services.AddScoped<IProductPriceService, ProductPriceManager>();

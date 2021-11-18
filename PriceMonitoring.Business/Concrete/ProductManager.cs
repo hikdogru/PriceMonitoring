@@ -168,7 +168,7 @@ namespace PriceMonitoring.Business.Concrete
                 return new SuccessResult(message: Messages.ProductUpdated);
             }
 
-            return new ErrorResult(message: Messages.ProductPriceNotExist);
+            return new ErrorResult(message: Messages.ProductSearchNotExist);
 
         }
 

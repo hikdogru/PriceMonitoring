@@ -1,8 +1,8 @@
-﻿using PriceMonitoring.Core.Utilities.Results;
+﻿using FluentValidation.Results;
+using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Entities.Concrete;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +25,7 @@ namespace PriceMonitoring.Business.Abstract
         IResult Add(ProductSubscription productSubscription);
         IResult Update(ProductSubscription productSubscription);
         IResult Delete(ProductSubscription productSubscription);
-        ValidationResult IsProductSubscriptionValidate(ProductSubscription productSubscription);
+        ValidationResult IsProductSubscriptionValid(ProductSubscription productSubscription);
         #endregion
     }
 }

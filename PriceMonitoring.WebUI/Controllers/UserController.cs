@@ -2,11 +2,13 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.ValidationRules.FluentValidation;
 using PriceMonitoring.Core.CrossCuttingConcerns.FluentValidation;
 using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.Entities.DTOs;
+using PriceMonitoring.WebUI.EmailService;
 using PriceMonitoring.WebUI.Models;
 
 namespace PriceMonitoring.WebUI.Controllers
@@ -15,12 +17,15 @@ namespace PriceMonitoring.WebUI.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
 
         public UserController(IUserService userService,
-                                IMapper mapper)
+                                IMapper mapper,
+                                IEmailSender emailSender)
         {
             _userService = userService;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
 
         public IActionResult Index()
@@ -46,6 +51,8 @@ namespace PriceMonitoring.WebUI.Controllers
                 var addedResult = _userService.Add(user: user);
                 if (addedResult.Success)
                 {
+                    var message = new Message(to: model.Email, subject: "Confirm Account", content: $"{model.FirstName}{model.Email}");
+                    _emailSender.SendEmail(message: message);
                     return RedirectToAction(nameof(Index), "Home");
                 }
                 ViewData["Message"] = addedResult.Message;

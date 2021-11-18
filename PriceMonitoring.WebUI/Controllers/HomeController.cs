@@ -50,18 +50,6 @@ namespace PriceMonitoring.WebUI.Controllers
             ViewBag.ProductCount = productsModel.Count();
             stopwatch.Stop();
             ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
-
-
-
-            //var duplicates = _productService.GetAll().Data.GroupBy(x => new { x.Name, x.Image })
-            //    .Select(x => new { Name = x.Key.Name, Image = x.Key.Image, Count = x.Count() }).Where(x => x.Count > 1).ToList();
-
-            //for (int i = 0; i < duplicates.Count(); i++)
-            //{
-            //    var product = _productService.GetByImageSource(duplicates[i].Image).Data;
-            //    _productService.Delete(product);
-            //}
-
             return View(model: productsModel);
         }
 
