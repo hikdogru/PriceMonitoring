@@ -50,6 +50,7 @@ namespace PriceMonitoring.WebUI.Controllers
             ViewBag.ProductCount = productsModel.Count();
             stopwatch.Stop();
             ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
+
             return View(model: productsModel);
         }
 

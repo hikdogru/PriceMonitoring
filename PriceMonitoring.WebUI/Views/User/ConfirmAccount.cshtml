@@ -1,0 +1,9 @@
+﻿@if (ViewData["SuccessMessage"] is not null)
+{
+    <div class="alert alert-success mt-5"> @ViewData["SuccessMessage"] </div>
+}
+
+@if (ViewData["WarningMessage"] is not null)
+{
+    <div class="alert alert-warning mt-5"> @ViewData["WarningMessage"] </div>
+}

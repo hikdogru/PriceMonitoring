@@ -10,6 +10,7 @@ using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.Entities.DTOs;
 using PriceMonitoring.WebUI.EmailService;
 using PriceMonitoring.WebUI.Models;
+using System;
 
 namespace PriceMonitoring.WebUI.Controllers
 {
@@ -47,16 +48,18 @@ namespace PriceMonitoring.WebUI.Controllers
             if (result.IsValid)
             {
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(user.Password);
+                string code = Guid.NewGuid().ToString();
                 user.Password = passwordHash;
+                user.Token = code;
                 var addedResult = _userService.Add(user: user);
                 if (addedResult.Success)
                 {
-                    var message = new Message(to: model.Email, subject: "Confirm Account", content: $"{model.FirstName}{model.Email}");
+                    string url = Url.Action("ConfirmAccount", "User", new { email = user.Email, token = code });
+                    var message = new Message(to: model.Email, subject: "Confirm Account", content: $"{model.FirstName} {model.Email} 'https://localhost:44396{url}'");
                     _emailSender.SendEmail(message: message);
-                    return RedirectToAction(nameof(Index), "Home");
+                    return RedirectToAction(nameof(ConfirmAccount));
                 }
                 ViewData["Message"] = addedResult.Message;
-                return View();
             }
             return View();
         }
@@ -76,7 +79,7 @@ namespace PriceMonitoring.WebUI.Controllers
             if (result.IsValid)
             {
                 var user = _userService.GetByEmail(loginDto.Email);
-                if (user.Success)
+                if (user.Success && user.Data.IsConfirm)
                 {
                     var passwordVerified = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Data.Password);
                     if (passwordVerified)
@@ -84,8 +87,16 @@ namespace PriceMonitoring.WebUI.Controllers
                         SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
                         return RedirectToAction(nameof(Index), "Home");
                     }
+                    else
+                    {
+                        ViewData["Message"] = "Wrong password or email!";
+                    }
                 }
-                ViewData["Message"] = "Wrong password or email!";
+                else
+                {
+                    ViewData["Message"] = "Your account is not confirmed!";
+                }
+
 
             }
 
@@ -96,6 +107,26 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             SessionModel.ClearUserSession(httpContext: HttpContext);
             return RedirectToAction(nameof(Index), "Home");
+        }
+
+        public IActionResult ConfirmAccount(string email, string token)
+        {
+            var user = _userService.GetByEmail(email: email);
+            if (user.Success)
+            {
+                if (user.Data.Token == token)
+                {
+                    ViewData["SuccessMessage"] = "Your account is confirmed!";
+                    user.Data.IsConfirm = true;
+                    _userService.Update(user: user.Data);
+                }
+            }
+            else
+            {
+                ViewData["WarningMessage"] = "Your account is not confirmed!";
+            }
+
+            return View();
         }
     }
 }

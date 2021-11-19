@@ -46,7 +46,8 @@ namespace PriceMonitoring.WebUI.EmailService
             string FilePath = Directory.GetCurrentDirectory() + @"\Views\Shared\ConfirmPage.html";
             StreamReader str = new StreamReader(FilePath);
             string mailText = str.ReadToEnd();
-            mailText = mailText.Replace("[username]", message.Content.Split(" ")[0]).Replace("[email]", message.Content.Split(" ")[1]);
+            string[] splitMessage = message.Content.Split(" ");
+            mailText = mailText.Replace("[username]", splitMessage[0]).Replace("[email]", splitMessage[1]).Replace("href=''", $"href={splitMessage[2]}");
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From));
             emailMessage.To.Add(message.To);
