@@ -1,0 +1,21 @@
+﻿@model List<ProductWithPriceAndWebsiteViewModel>
+
+
+
+@if (Model != null)
+{
+    <div class="row">
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3">
+
+                <input type="hidden" value="@product.Product.Id" name="id" />
+                <img src="@product.Product.Image" alt="Product Image" />
+                <h5 class="text-center">@product.Product.Name</h5>
+                <h5 class="text-center">@product.Website.Name</h5>
+
+            </div>
+        }
+
+    </div>
+}

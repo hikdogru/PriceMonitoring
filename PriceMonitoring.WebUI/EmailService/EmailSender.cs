@@ -43,17 +43,12 @@ namespace PriceMonitoring.WebUI.EmailService
 
         private MimeMessage CreateEmail(Message message)
         {
-            string FilePath = Directory.GetCurrentDirectory() + @"\Views\Shared\ConfirmPage.html";
-            StreamReader str = new StreamReader(FilePath);
-            string mailText = str.ReadToEnd();
-            string[] splitMessage = message.Content.Split(" ");
-            mailText = mailText.Replace("[username]", splitMessage[0]).Replace("[email]", splitMessage[1]).Replace("href=''", $"href={splitMessage[2]}");
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_emailConfiguration.From));
             emailMessage.To.Add(message.To);
             emailMessage.Subject = message.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            { Text = mailText };
+            { Text = message.Content };
             return emailMessage;
         }
 

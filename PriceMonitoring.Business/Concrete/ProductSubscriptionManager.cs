@@ -6,6 +6,7 @@ using PriceMonitoring.Core.CrossCuttingConcerns.FluentValidation;
 using PriceMonitoring.Core.Utilities.Results;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Entities.Concrete;
+using PriceMonitoring.Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -188,6 +189,26 @@ namespace PriceMonitoring.Business.Concrete
 
             }
             return new SuccessResult(message: Messages.ProductSubscriptionSearchNotExist);
+        }
+
+        public async Task<IDataResult<IQueryable<ProductSubscription>>> GetAllByUserIdAsync(int userId)
+        {
+            var subscriptions = await _unitOfWork.ProductSubscriptions.GetAllAsync(x => x.UserId == userId);
+            if (subscriptions == null)
+            {
+                return new ErrorDataResult<IQueryable<ProductSubscription>>(message: Messages.ProductSubscriptionSearchNotExist);
+            }
+            return new SuccessDataResult<IQueryable<ProductSubscription>>(data: subscriptions, message: Messages.ProductSubscriptionsListed);
+        }
+
+        public IDataResult<IQueryable<ProductSubscription>> GetAllByUserId(int userId)
+        {
+            var subscriptions = _unitOfWork.ProductSubscriptions.GetAll(x => x.UserId == userId);
+            if (subscriptions == null)
+            {
+                return new ErrorDataResult<IQueryable<ProductSubscription>>(message: Messages.ProductSubscriptionSearchNotExist);
+            }
+            return new SuccessDataResult<IQueryable<ProductSubscription>>(data: subscriptions, message: Messages.ProductSubscriptionsListed);
         }
 
         #endregion

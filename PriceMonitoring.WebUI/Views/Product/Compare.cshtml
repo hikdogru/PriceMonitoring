@@ -22,9 +22,6 @@
 </form>
 
 
-
-
-
 @if (Model != null)
 {
     <div class="row">
@@ -47,7 +44,14 @@
                     @if(isUserAuthenticated)
                     {
                         <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct"> Subscribe </button>
+                        @if(TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+                        {
+                            string alertType = TempData["AlertType"] as string;
+                            <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                        }
                     }
+
+                    
 
                 </form>
             </div>

@@ -11,6 +11,7 @@ using PriceMonitoring.Entities.DTOs;
 using PriceMonitoring.WebUI.EmailService;
 using PriceMonitoring.WebUI.Models;
 using System;
+using System.IO;
 
 namespace PriceMonitoring.WebUI.Controllers
 {
@@ -55,7 +56,11 @@ namespace PriceMonitoring.WebUI.Controllers
                 if (addedResult.Success)
                 {
                     string url = Url.Action("ConfirmAccount", "User", new { email = user.Email, token = code });
-                    var message = new Message(to: model.Email, subject: "Confirm Account", content: $"{model.FirstName} {model.Email} 'https://localhost:44396{url}'");
+                    string confirmFilePath = Directory.GetCurrentDirectory() + @"\Views\Shared\ConfirmPage.html";
+                    StreamReader str = new StreamReader(confirmFilePath);
+                    string mailText = str.ReadToEnd();
+                    mailText = mailText.Replace("[username]", model.FirstName).Replace("[email]", model.Email).Replace("href=''", $"href=https://localhost:44396{url}");
+                    var message = new Message(to: model.Email, subject: "Confirm Account", content: mailText);
                     _emailSender.SendEmail(message: message);
                     return RedirectToAction(nameof(ConfirmAccount));
                 }
@@ -96,8 +101,6 @@ namespace PriceMonitoring.WebUI.Controllers
                 {
                     ViewData["Message"] = "Your account is not confirmed!";
                 }
-
-
             }
 
             return View();

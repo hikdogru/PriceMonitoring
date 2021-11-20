@@ -145,8 +145,42 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             var product = _productService.GetProductWithPriceById(id);
             var user = _userService.GetByEmail(HttpContext.Session.GetString("email"));
-            _productSubscriptionService.Add(new ProductSubscription { ProductId = id, ProductPriceId = product.Data.ProductPrice.LastOrDefault().Id, UserId = user.Data.Id });
-            return RedirectToAction(nameof(Compare));
+            var result = _productSubscriptionService.Add(new ProductSubscription { ProductId = id, ProductPriceId = product.Data.ProductPrice.LastOrDefault().Id, UserId = user.Data.Id });
+            if (result.Success)
+            {
+                TempData["Message"] = "Product subscription is added successfuly!";
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                TempData["Message"] = "Product subscription is not added successfuly!";
+                TempData["AlertType"] = "danger";
+            }
+
+            TempData["ProductId"] = id;
+
+            return View(nameof(Compare), model: _searchResults);
+        }
+
+        [HttpGet]
+        public IActionResult Subscriptions()
+        {
+            string email = HttpContext.Session.GetString("email");
+            var user = _userService.GetByEmail(email: email);
+            if (user.Success)
+            {
+                var products = new List<ProductWithPriceAndWebsiteViewModel>();
+                var subs = _productSubscriptionService.GetAllByUserId(userId: user.Data.Id).Data.ToList();
+
+                foreach (var sub in subs)
+                {
+                    var product = _productService.GetProductsWithPriceAndWebsite().Data.Where(x => x.Product.Id == sub.ProductId).SingleOrDefault();
+                    products.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(product));
+                }
+                return View(model: products);
+                
+            }
+            return NotFound();
         }
         #endregion
     }
