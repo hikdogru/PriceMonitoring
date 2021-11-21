@@ -66,7 +66,7 @@ namespace PriceMonitoring.WebUI.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Search(string q)
         {
             _chartProducts.Clear();
@@ -76,7 +76,8 @@ namespace PriceMonitoring.WebUI.Controllers
                 if (result.Success)
                 {
                     _searchResults = new();
-                    result.Data.ToList().ForEach(x => _searchResults.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(x)));
+                    var products = result.Data.ToList();
+                    products.ForEach(x => _searchResults.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(x)));
                     return View("Compare", model: _searchResults);
                 }
             }
@@ -84,7 +85,7 @@ namespace PriceMonitoring.WebUI.Controllers
         }
 
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult AddToCompare(int id)
         {
             var dates = _productPriceService.GetAll().Data.GroupBy(x => x.SavedDate.Date).Select(x => x.Key.ToShortDateString()).ToList();
@@ -153,7 +154,7 @@ namespace PriceMonitoring.WebUI.Controllers
             }
             else
             {
-                TempData["Message"] = "Product subscription is not added successfuly!";
+                TempData["Message"] = result.Message;
                 TempData["AlertType"] = "danger";
             }
 

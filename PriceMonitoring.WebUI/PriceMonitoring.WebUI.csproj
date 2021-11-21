@@ -24,4 +24,8 @@
     <ProjectReference Include="..\PriceMonitoring.Data\PriceMonitoring.Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Shared\Components\" />
+  </ItemGroup>
+
 </Project>

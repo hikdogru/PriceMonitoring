@@ -38,7 +38,7 @@ namespace PriceMonitoring.Business.Constants
         public static string ProductSubscriptionDeleted = "ProductSubscription is deleted successfuly";
         public static string ProductSubscriptionsListed = "ProductSubscriptions are listed successfuly";
         public static string ProductSubscriptionListed = "ProductSubscription is listed successfuly";
-        public static string ProductSubscriptionIsExist = "ProductSubscription is already exist in database!";
+        public static string ProductSubscriptionIsExist = "Product is already exist in database!";
         public static string ProductSubscriptionSearchNotExist = "ProductSubscription is not exist!";
 
 

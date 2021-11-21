@@ -142,8 +142,7 @@ namespace PriceMonitoring.Business.Concrete
         private bool IsProductSubscriptionExistInDatabase(ProductSubscription productSubscription)
         {
             return _unitOfWork.ProductSubscriptions.GetAll(x => x.UserId == productSubscription.UserId &&
-                                                                x.ProductId == productSubscription.ProductId &&
-                                                                x.ProductPriceId == productSubscription.ProductPriceId).Count() > 0;
+                                                                x.ProductId == productSubscription.ProductId).Count() > 0;
         }
 
         public IResult Update(ProductSubscription productSubscription)

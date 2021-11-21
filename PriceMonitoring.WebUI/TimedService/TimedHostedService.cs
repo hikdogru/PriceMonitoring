@@ -8,6 +8,7 @@ using PriceMonitoring.WebUI.Models;
 using PriceMonitoring.WebUI.Models.GroceryStore;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,9 +27,18 @@ namespace PriceMonitoring.WebUI.TimedService
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero,
-                                  TimeSpan.FromHours(24));
+            var timeDelay = GetTimeDelay();
+            _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(timeDelay),
+                                             TimeSpan.FromHours(24));
             return Task.CompletedTask;
+        }
+
+        private double GetTimeDelay()
+        {
+            var shouldExecutedTime = TimeOnly.Parse("15:43");
+            var nowTime = TimeOnly.FromDateTime(DateTime.Now);
+            var timeDelay = (shouldExecutedTime - nowTime).TotalSeconds;
+            return timeDelay;
         }
 
         private void DoWork(object state)
@@ -38,8 +48,6 @@ namespace PriceMonitoring.WebUI.TimedService
 
             var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
             SaveDatabase(productsFromA101);
-
-
         }
 
         private void SaveDatabase(List<ProductModel> products)

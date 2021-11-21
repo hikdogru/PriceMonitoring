@@ -56,7 +56,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
 
         public IQueryable<ProductWithPriceAndWebsiteDto> Search(string q)
         {
-            var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q));
+            var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q)).AsQueryable();
             return products;
         }
     }
