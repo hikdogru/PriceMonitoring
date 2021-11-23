@@ -15,11 +15,22 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
 {
     public class EfCoreProductRepository : EfEntityRepositoryBase<Product, PriceMonitoringContext>, IProductRepository
     {
+        #region fields
+
         private PriceMonitoringContext _context;
+
+        #endregion
+
+        #region ctor
+
         public EfCoreProductRepository(PriceMonitoringContext context) : base(context)
         {
             _context = context;
         }
+
+        #endregion
+
+        #region methods
 
         public IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null)
         {
@@ -27,6 +38,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
 
             return filter == null ? products : products.Where(filter);
         }
+
         public IQueryable<ProductWithPriceAndWebsiteDto> GetProductsWithPriceAndWebsite(Expression<Func<ProductWithPriceAndWebsiteDto, bool>> filter = null)
         {
             var products = from product in GetProductsWithPrice()
@@ -59,5 +71,20 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
             var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q)).AsQueryable();
             return products;
         }
+
+        public async Task<IQueryable<ProductListDto>> GetProductListDtoAsync(Expression<Func<ProductListDto, bool>> filter = null)
+        {
+            var products = (from product in await _context.Products.ToListAsync()
+                           select new ProductListDto()
+                           {
+                               Id = product.Id,
+                               Name = product.Name,
+                               Image = product.Image,
+                               WebsiteId = product.WebsiteId
+                           }).AsQueryable();
+            return filter == null ? products : products.Where(filter);
+        }
     }
+
+    #endregion
 }

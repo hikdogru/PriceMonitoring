@@ -20,6 +20,7 @@ namespace PriceMonitoring.Business.Abstract
         Task<IResult> AddAsync(Product product);
         Task<IResult> UpdateAsync(Product product);
         Task<IResult> DeleteAsync(Product product);
+        Task<IDataResult<IQueryable<ProductListDto>>> GetProductListDtoAsync();
         #endregion
 
         #region sync

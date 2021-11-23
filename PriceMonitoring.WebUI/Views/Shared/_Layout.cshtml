@@ -34,7 +34,7 @@
                         @if (isUserAuthenticated)
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="Subscriptions"> Subscriptions </a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Product" asp-action="GetAllSubscriptions"> Subscriptions </a>
                             </li>
                         }
                     </ul>
@@ -42,8 +42,8 @@
                     @if (!isUserAuthenticated)
                     {
                         <div class="d-flex">
-                            <a class="btn btn-primary m-2" href="/User/Register">Register</a>
-                            <a class="btn btn-success m-2" href="/User/Login">Login</a>
+                            <a class="btn btn-primary m-2" asp-action="Register" asp-controller="User">Register</a>
+                            <a class="btn btn-success m-2" asp-action="Login" asp-controller="User">Login</a>
                         </div>
                     }
                     else

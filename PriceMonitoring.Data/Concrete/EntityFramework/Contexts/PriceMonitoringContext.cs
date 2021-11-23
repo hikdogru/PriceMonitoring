@@ -19,7 +19,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
 
         public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
         {
-
+            
         }
         public PriceMonitoringContext()
         {

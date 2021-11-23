@@ -34,7 +34,8 @@ namespace PriceMonitoring.WebUI
         public void ConfigureServices(IServiceCollection services)
         {
             // Add dbcontext
-            services.AddDbContext<PriceMonitoringContext>(option => option.UseSqlServer(Configuration.GetConnectionString("PriceMonitoringConnectionString")));
+            services.AddDbContext<PriceMonitoringContext>(option => option.UseSqlServer(Configuration.GetConnectionString("PriceMonitoringConnectionString"),
+                 o => o.CommandTimeout(9999999)));
 
 
             // Email configuration

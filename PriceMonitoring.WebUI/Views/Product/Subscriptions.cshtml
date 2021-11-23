@@ -8,14 +8,18 @@
         @foreach (var product in Model)
         {
             <div class="col-md-3">
-
-                <input type="hidden" value="@product.Product.Id" name="id" />
-                <img src="@product.Product.Image" alt="Product Image" />
-                <h5 class="text-center">@product.Product.Name</h5>
-                <h5 class="text-center">@product.Website.Name</h5>
-
+                <form asp-action="DeleteSubscription" asp-controller="Product">
+                    @await Html.PartialAsync(partialViewName: "_ProductPartial", model: product)
+                    <div class="text-center">
+                        <button class="btn btn-danger"> Delete subscription </button>
+                        @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+                        {
+                            string alertType = TempData["AlertType"] as string;
+                            <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                        }
+                    </div>
+                </form>
             </div>
         }
-
     </div>
 }

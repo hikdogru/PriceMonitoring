@@ -53,10 +53,18 @@ namespace PriceMonitoring.WebUI.Controllers
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
             var dates = new List<string>();
+            var products = new List<ChartJsonModel>();
+            products.Add(new ChartJsonModel { Data = prices, Name = product.Name });
             productPriceModel.ProductPrice.ToList().ForEach(x => prices.Add(x.Price));
             productPriceModel.ProductPrice.ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
             ViewData["Prices"] = JsonConvert.SerializeObject(prices);
             ViewData["Dates"] = JsonConvert.SerializeObject(dates);
+            ViewData["Products"] = JsonConvert.SerializeObject(products, Formatting.Indented,
+                                                                    new JsonSerializerSettings
+                                                                    {
+                                                                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
+                                                                        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
+                                                                    });
             return View(model: productPriceModel);
         }
 
@@ -128,6 +136,7 @@ namespace PriceMonitoring.WebUI.Controllers
             {
                 _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
             }
+
             ViewData["Prices"] = JsonConvert.SerializeObject(prices);
             ViewData["Dates"] = JsonConvert.SerializeObject(_dates.OrderBy(x => x));
             ViewData["Products"] = JsonConvert.SerializeObject(_chartProducts, Formatting.Indented,
@@ -146,42 +155,68 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             var product = _productService.GetProductWithPriceById(id);
             var user = _userService.GetByEmail(HttpContext.Session.GetString("email"));
-            var result = _productSubscriptionService.Add(new ProductSubscription { ProductId = id, ProductPriceId = product.Data.ProductPrice.LastOrDefault().Id, UserId = user.Data.Id });
+            var result = _productSubscriptionService.Add(new ProductSubscription
+            {
+                ProductId = id,
+                ProductPriceId = product.Data.ProductPrice.LastOrDefault().Id,
+                UserId = user.Data.Id
+            });
             if (result.Success)
             {
-                TempData["Message"] = "Product subscription is added successfuly!";
                 TempData["AlertType"] = "success";
             }
             else
             {
-                TempData["Message"] = result.Message;
                 TempData["AlertType"] = "danger";
             }
 
+            TempData["Message"] = result.Message;
             TempData["ProductId"] = id;
 
             return View(nameof(Compare), model: _searchResults);
         }
 
-        [HttpGet]
-        public IActionResult Subscriptions()
+        [HttpGet("Subscriptions")]
+        public IActionResult GetAllSubscriptions()
         {
             string email = HttpContext.Session.GetString("email");
             var user = _userService.GetByEmail(email: email);
             if (user.Success)
             {
                 var products = new List<ProductWithPriceAndWebsiteViewModel>();
-                var subs = _productSubscriptionService.GetAllByUserId(userId: user.Data.Id).Data.ToList();
+                var productSubcriptions = _productSubscriptionService.GetAllByUserId(userId: user.Data.Id).Data.ToList();
 
-                foreach (var sub in subs)
+                foreach (var sub in productSubcriptions)
                 {
                     var product = _productService.GetProductsWithPriceAndWebsite().Data.Where(x => x.Product.Id == sub.ProductId).SingleOrDefault();
                     products.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(product));
                 }
-                return View(model: products);
-                
+                return View(viewName: "Subscriptions", model: products);
+
             }
             return NotFound();
+        }
+
+        [HttpPost]
+        public IActionResult DeleteSubscription(int id)
+        {
+            var user = _userService.GetByEmail(email: HttpContext.Session.GetString("email"));
+            var productSubcriptions = _productSubscriptionService.GetAllByUserId(userId: user.Data.Id).Data.ToList();
+            var productSubscription = productSubcriptions.Where(x => x.ProductId == id).SingleOrDefault();
+            var result = _productSubscriptionService.Delete(productSubscription);
+
+            if (result.Success)
+            {
+                TempData["AlertType"] = "success";
+            }
+            else
+            {
+                TempData["AlertType"] = "danger";
+            }
+
+            TempData["Message"] = result.Message;
+            TempData["ProductId"] = id;
+            return RedirectToAction(nameof(GetAllSubscriptions));
         }
         #endregion
     }

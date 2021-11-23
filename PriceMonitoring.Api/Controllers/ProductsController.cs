@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.Entities.DTOs;
+using System.Threading.Tasks;
 
 namespace PriceMonitoring.Api.Controllers
 {
@@ -31,9 +32,9 @@ namespace PriceMonitoring.Api.Controllers
         #region methods
 
         [HttpGet(Name = "getallproducts")]
-        public IActionResult GetAllProducts()
+        public async Task<IActionResult> GetAllProducts()
         {
-            var result = _productService.GetProductListDto();
+            var result = await _productService.GetProductListDtoAsync();
             if (result.Success)
             {
                 return Ok(result);

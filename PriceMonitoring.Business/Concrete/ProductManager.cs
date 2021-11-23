@@ -202,6 +202,11 @@ namespace PriceMonitoring.Business.Concrete
             return ValidationTool.Validate(new ProductValidator(), product);
         }
 
+        public async Task<IDataResult<IQueryable<ProductListDto>>> GetProductListDtoAsync()
+        {
+            return new SuccessDataResult<IQueryable<ProductListDto>>(await _unitOfWork.Products.GetProductListDtoAsync(), message: Messages.ProductsListed);
+        }
+
         #endregion
     }
 }

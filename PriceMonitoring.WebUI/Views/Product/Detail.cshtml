@@ -3,6 +3,12 @@
 
     ViewData["Title"] = "Detail";
     var product = Model;
+    var chartModel = new ChartViewModel
+            {
+                Products = ViewData["Products"].ToString(),
+                Dates = ViewData["Dates"].ToString(),
+                Prices = ViewData["Prices"].ToString()
+            };
 
 }
 <div class="text-center" style="width:200px;margin:0 auto">
@@ -14,86 +20,8 @@
 
 
 
-
 @section Scripts
 {
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/series-label.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-
-<figure class="highcharts-figure">
-    <div id="container"></div>
-
-</figure>
-
-<script>
-
-
-    var prices =  @Html.Raw(ViewData["Prices"]);
-    var dates =  @Html.Raw(ViewData["Dates"]);
-
-
-
-        Highcharts.chart('container', {
-
-        title: {
-            text: 'Product price changing, 2021'
-        },
-
-            subtitle: {
-                text: 'Market: Migros'
-        },
-
-        yAxis: {
-            title: {
-                text: 'Price (TRY)'
-            }
-            },
-
-        xAxis: {
-
-
-            categories:  dates
-            },
-
-            legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle'
-            },
-
-            plotOptions: {
-            series: {
-                    label: {
-                        connectorAllowed: false,
-
-            }
-            }
-            },
-
-            series: [{
-                name: '@Html.Raw(product.Name)',
-                data: prices
-            }],
-
-            responsive: {
-            rules: [{
-            condition: {
-            maxWidth: 500
-            },
-            chartOptions: {
-            legend: {
-            layout: 'horizontal',
-            align: 'center',
-            verticalAlign: 'bottom'
-            }
-            }
-            }]
-            }
-
-            });
-</script>
+    @await Html.PartialAsync("_ChartPartial", chartModel)
 
 }

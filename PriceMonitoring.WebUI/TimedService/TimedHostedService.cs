@@ -27,9 +27,9 @@ namespace PriceMonitoring.WebUI.TimedService
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            var timeDelay = GetTimeDelay();
-            _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(timeDelay),
-                                             TimeSpan.FromHours(24));
+            //var timeDelay = GetTimeDelay();
+            //_timer = new Timer(DoWork, null, TimeSpan.FromSeconds(timeDelay),
+            //                                 TimeSpan.FromHours(24));
             return Task.CompletedTask;
         }
 
@@ -64,10 +64,10 @@ namespace PriceMonitoring.WebUI.TimedService
                 productService.Add(product: new Product { Image = model.Image, Name = model.Name, WebsiteId = model.WebsiteId });
                 var entity = productService.GetByImageSource(model.Image.ToString());
                 var productPrice = new ProductPrice { SavedDate = DateTime.Now, Price = double.Parse(model.Price.Replace("TL", "").Replace(",", ".")), ProductId = entity.Data.Id };
-                var x = productSubscriptions.Where(x => x.ProductId == entity.Data.Id).ToList();
-                if (x.Count() > 0)
+                var subscriptions = productSubscriptions.Where(x => x.ProductId == entity.Data.Id).ToList();
+                if (subscriptions.Count() > 0)
                 {
-                    foreach (var item in x)
+                    foreach (var item in subscriptions)
                     {
                         var price = productPriceService.GetById(item.ProductPriceId).Data;
                         if (price.Price > 0 && productPrice.Price < price.Price)
@@ -85,7 +85,6 @@ namespace PriceMonitoring.WebUI.TimedService
                             }
                         }
                     }
-
                 }
                 productPriceService.Add(productPrice: productPrice);
             }

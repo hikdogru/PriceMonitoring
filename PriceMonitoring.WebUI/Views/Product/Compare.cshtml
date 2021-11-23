@@ -2,12 +2,17 @@
 @{
     var chartProducts = ViewData["Products"];
     var chartProduct = new List<ChartJsonModel>();
+    var chartModel = new ChartViewModel();
     if (chartProducts is not null)
     {
         chartProduct = JsonConvert.DeserializeObject<List<ChartJsonModel>>(chartProducts.ToString());
+        chartModel.Products = ViewData["Products"].ToString();
+        chartModel.Dates = ViewData["Dates"].ToString();
+        chartModel.Prices = ViewData["Prices"].ToString();
     }
 
     var isUserAuthenticated = SessionModel.IsSessionExist(key: "email", httpContext: Context);
+
 }
 
 
@@ -23,114 +28,40 @@
 @if (Model != null)
 {
     <div class="row">
-    @foreach (var product in Model)
-    {
-        <div class="col-md-3">
-            <form method="get">
-                <input type="hidden" value="@product.Product.Id" name="id" />
-                <img src="@product.Product.Image" alt="Product Image" />
-                <h5>@product.Product.Name</h5>
-                <h5>@product.Website.Name</h5>
-                @if (chartProduct?.Where(x => x.Name == product.Product.Name).Count() > 0)
-                {
-                    <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
-                }
-                else
-                {
-                    <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
-                }
-                @if (isUserAuthenticated)
-                {
-                    <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
-                    @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3">
+                <form method="get">
+                    @await Html.PartialAsync(partialViewName: "_ProductPartial", model: product)
+
+                    @if (chartProduct?.Where(x => x.Name == product.Product.Name).Count() > 0)
                     {
-                        string alertType = TempData["AlertType"] as string;
-                        <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                        <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
                     }
-                }
-            </form>
-        </div>
-    }
-</div>
+                    else
+                    {
+                        <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                    }
+                    @if (isUserAuthenticated)
+                    {
+                        <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
+                        @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+                        {
+                            string alertType = TempData["AlertType"] as string;
+                            <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                        }
+                    }
+                </form>
+            </div>
+        }
+    </div>
 }
 
 
 
 @section Scripts
 {
-<script src="https://code.highcharts.com/highcharts.js"></script>
-<script src="https://code.highcharts.com/modules/series-label.js"></script>
-<script src="https://code.highcharts.com/modules/exporting.js"></script>
-<script src="https://code.highcharts.com/modules/export-data.js"></script>
-<script src="https://code.highcharts.com/modules/accessibility.js"></script>
-
-<figure class="highcharts-figure">
-    <div id="container"></div>
-
-</figure>
-
-<script>
-
-
-    var prices =  @Html.Raw(ViewData["Prices"]);
-    var dates =  @Html.Raw(ViewData["Dates"]);
-
-
-
-    Highcharts.chart('container', {
-
-        title: {
-            text: 'Product price changing, 2021'
-        },
-
-
-        yAxis: {
-            title: {
-                text: 'Price (TRY)'
-            }
-        },
-
-        xAxis: {
-
-            categories: dates
-        },
-
-        legend: {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle'
-        },
-
-        plotOptions: {
-            series: {
-                label: {
-                    connectorAllowed: false,
-
-                }
-            }
-        },
-
-        series: @Html.Raw(ViewData["Products"])
-            ,
-
-            responsive: {
-            rules: [{
-            condition: {
-            maxWidth: 500
-            },
-            chartOptions: {
-            legend: {
-            layout: 'horizontal',
-            align: 'center',
-            verticalAlign: 'bottom'
-            }
-            }
-            }]
-            }
-
-            });
-</script>
-
+    @await Html.PartialAsync("_ChartPartial", chartModel)
 }
 
 

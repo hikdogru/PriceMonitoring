@@ -1,0 +1,7 @@
+﻿@model ProductWithPriceAndWebsiteViewModel
+
+
+<input type="hidden" value="@Model.Product.Id" name="id" />
+<img src="@Model.Product.Image" alt="Model Image" />
+<h5 class="text-center">@Model.Product.Name</h5>
+<h5 class="text-center">@Model.Website.Name</h5>
