@@ -18,11 +18,7 @@
 
 <h5>Compare page</h5>
 
-
-<form method="get">
-    <input type="search" class="form-control" name="q" placeholder="Product name" />
-    <button type="submit" class="btn btn-primary mt-2" asp-action="Search"> Search </button>
-</form>
+@await Html.PartialAsync(partialViewName: "_SearchFormPartial")
 
 
 @if (Model != null)
@@ -33,24 +29,26 @@
             <div class="col-md-3">
                 <form method="get">
                     @await Html.PartialAsync(partialViewName: "_ProductPartial", model: product)
-
-                    @if (chartProduct?.Where(x => x.Name == product.Product.Name).Count() > 0)
-                    {
-                        <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
-                    }
-                    else
-                    {
-                        <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
-                    }
-                    @if (isUserAuthenticated)
-                    {
-                        <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
-                        @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+                    <div class="text-center">
+                        @if (chartProduct?.Where(x => x.Name == product.Product.Name).Count() > 0)
                         {
-                            string alertType = TempData["AlertType"] as string;
-                            <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                            <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
                         }
-                    }
+                        else
+                        {
+                            <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                        }
+
+                        @if (isUserAuthenticated)
+                        {
+                            <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
+                            @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
+                            {
+                                string alertType = TempData["AlertType"] as string;
+                                <div class="alert alert-@alertType"> @TempData["Message"] </div>
+                            }
+                        }
+                    </div>
                 </form>
             </div>
         }

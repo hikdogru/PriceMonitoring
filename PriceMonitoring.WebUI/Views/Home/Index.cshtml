@@ -4,21 +4,14 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <h2>Product Count is : @ViewBag.ProductCount</h2>
-    <h2>Elapsed time is : @ViewBag.ElapsedTime</h2>
-</div>
-
 <div class="row">
     @foreach (var product in Model)
     {
         <div class="col-md-3">
             <form method="post" asp-controller="Product" asp-action="Detail">
-                <input type="hidden" asp-for="@product.Id" name="id"/>
-                <img src="@product.Image"/>
+                <input type="hidden" asp-for="@product.Id" name="id" />
+                <img src="@product.Image" />
                 <h5 class="text-center">@product.Name</h5>
-                
                 <div class="text-center">
                     <button type="submit" class="btn btn-primary text-center">Detail</button>
                 </div>

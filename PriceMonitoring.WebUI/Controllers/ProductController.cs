@@ -57,14 +57,9 @@ namespace PriceMonitoring.WebUI.Controllers
             products.Add(new ChartJsonModel { Data = prices, Name = product.Name });
             productPriceModel.ProductPrice.ToList().ForEach(x => prices.Add(x.Price));
             productPriceModel.ProductPrice.ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
-            ViewData["Prices"] = JsonConvert.SerializeObject(prices);
-            ViewData["Dates"] = JsonConvert.SerializeObject(dates);
-            ViewData["Products"] = JsonConvert.SerializeObject(products, Formatting.Indented,
-                                                                    new JsonSerializerSettings
-                                                                    {
-                                                                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                                                                        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-                                                                    });
+            ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
+            ViewData["Dates"] = JsonModel.SerializeObject(value: dates);
+            ViewData["Products"] = JsonModel.SerializeObject(value: products);
             return View(model: productPriceModel);
         }
 
@@ -137,14 +132,9 @@ namespace PriceMonitoring.WebUI.Controllers
                 _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
             }
 
-            ViewData["Prices"] = JsonConvert.SerializeObject(prices);
-            ViewData["Dates"] = JsonConvert.SerializeObject(_dates.OrderBy(x => x));
-            ViewData["Products"] = JsonConvert.SerializeObject(_chartProducts, Formatting.Indented,
-                                                                    new JsonSerializerSettings
-                                                                    {
-                                                                        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-                                                                        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() }
-                                                                    });
+            ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
+            ViewData["Dates"] = JsonModel.SerializeObject(value: _dates.OrderBy(x => x));
+            ViewData["Products"] = JsonModel.SerializeObject(value: _chartProducts);
 
             return View("Compare", model: _searchResults.ToList());
         }

@@ -42,15 +42,9 @@ namespace PriceMonitoring.WebUI.Controllers
         #region methods
         public IActionResult Index()
         {
-            var stopwatch = Stopwatch.StartNew();
-
             var productsModel = new List<ProductModel>();
             var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 1).Take(12).ToList();
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
-            ViewBag.ProductCount = productsModel.Count();
-            stopwatch.Stop();
-            ViewBag.ElapsedTime = stopwatch.ElapsedMilliseconds;
-
             return View(model: productsModel);
         }
 
