@@ -42,9 +42,11 @@ namespace PriceMonitoring.WebUI.Controllers
         #region methods
         public IActionResult Index()
         {
+            _logger.LogInformation($"Home controller action executed in {DateTime.Now.ToShortTimeString()}");
             var productsModel = new List<ProductModel>();
             var products = _productService.GetProductsWithPrice().Data.Where(x => x.WebsiteId == 1).Take(12).ToList();
             products.ForEach(x => productsModel.Add(_mapper.Map<ProductModel>(x)));
+            _logger.LogInformation($"We have {productsModel.Count()} products!");
             return View(model: productsModel);
         }
 

@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using MimeKit;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.ValidationRules.FluentValidation;
@@ -17,19 +18,29 @@ namespace PriceMonitoring.WebUI.Controllers
 {
     public class UserController : Controller
     {
+        #region fields
+
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
         private readonly IEmailSender _emailSender;
+        private readonly ILogger<UserController> _logger;
 
+
+        #endregion
+
+        #region ctor
         public UserController(IUserService userService,
                                 IMapper mapper,
-                                IEmailSender emailSender)
+                                IEmailSender emailSender, ILogger<UserController> logger)
         {
             _userService = userService;
             _mapper = mapper;
             _emailSender = emailSender;
+            _logger = logger;
         }
+        #endregion
 
+        #region methods
         public IActionResult Index()
         {
             return View();
@@ -43,6 +54,7 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult Register(UserModel model)
         {
+            _logger.LogInformation($"Called register method in {DateTime.Now.ToShortTimeString()} ");
             var user = _mapper.Map<User>(model);
             var result = _userService.IsUserValid(user: user);
             result.AddToModelState(ModelState, null);
@@ -55,6 +67,7 @@ namespace PriceMonitoring.WebUI.Controllers
                 var addedResult = _userService.Add(user: user);
                 if (addedResult.Success)
                 {
+                    _logger.LogInformation($"User is registered {DateTime.Now.ToShortTimeString()}. User: {user.FirstName + " " + user.LastName + " " + user.Email} ");
                     string url = Url.Action("ConfirmAccount", "User", new { email = user.Email, token = code });
                     string confirmFilePath = Directory.GetCurrentDirectory() + @"\Views\Shared\ConfirmPage.html";
                     StreamReader str = new StreamReader(confirmFilePath);
@@ -89,11 +102,13 @@ namespace PriceMonitoring.WebUI.Controllers
                     var passwordVerified = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Data.Password);
                     if (passwordVerified)
                     {
+                        _logger.LogInformation($"User is logged in {DateTime.Now.ToShortTimeString()} User email: {user.Data.Email}");
                         SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
                         return RedirectToAction(nameof(Index), "Home");
                     }
                     else
                     {
+                        _logger.LogInformation($"User is not logged in {DateTime.Now.ToShortTimeString()} User email: {user.Data.Email}");
                         ViewData["Message"] = "Wrong password or email!";
                     }
                 }
@@ -119,6 +134,7 @@ namespace PriceMonitoring.WebUI.Controllers
             {
                 if (user.Data.Token == token)
                 {
+                    _logger.LogInformation($"User account is confirmed in {DateTime.Now.ToShortTimeString()} User email: {user.Data.Email}");
                     ViewData["SuccessMessage"] = "Your account is confirmed!";
                     user.Data.IsConfirm = true;
                     _userService.Update(user: user.Data);
@@ -132,4 +148,5 @@ namespace PriceMonitoring.WebUI.Controllers
             return View();
         }
     }
+    #endregion
 }

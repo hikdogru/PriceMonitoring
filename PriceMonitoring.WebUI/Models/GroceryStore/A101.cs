@@ -16,7 +16,6 @@ namespace PriceMonitoring.WebUI.Models.GroceryStore
             ICustomChromeDriver chromeDriverModel = new CustomChromeDriver();
             var productList = new List<ProductModel>();
             chromeDriverModel.GoToUrl(url: url);
-            chromeDriverModel.FindElement(by: By.CssSelector("div.hype-row > button:nth-child(2)")).Click();
             var productCount = chromeDriverModel.FindElement(By.CssSelector("div.total-product-count.hidden-xs ")).Text.Split(" ").Where(x => numbers.Any(y => x.Contains(y.ToString()))).ToList()[0];
             int pageCount = Convert.ToInt32(Math.Ceiling(double.Parse(productCount) / 48));
             string currentUrl = chromeDriverModel.GetCurrentUrl();

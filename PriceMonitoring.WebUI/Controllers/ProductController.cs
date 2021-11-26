@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using PriceMonitoring.Business.Abstract;
@@ -25,18 +26,21 @@ namespace PriceMonitoring.WebUI.Controllers
         private readonly IUserService _userService;
         private readonly IProductSubscriptionService _productSubscriptionService;
         private readonly IMapper _mapper;
+        private readonly ILogger<ProductController> _logger;
+
         #endregion
 
         #region ctor
         public ProductController(IProductService productService,
             IMapper mapper, IProductPriceService productPriceService,
-            IUserService userService, IProductSubscriptionService productSubscriptionService)
+            IUserService userService, IProductSubscriptionService productSubscriptionService, ILogger<ProductController> logger)
         {
             _productService = productService;
             _mapper = mapper;
             _productPriceService = productPriceService;
             _userService = userService;
             _productSubscriptionService = productSubscriptionService;
+            _logger = logger;
         }
         #endregion
 
@@ -49,6 +53,7 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpPost]
         public IActionResult Detail(int id)
         {
+            _logger.LogInformation($"Called product detail in {DateTime.Now.ToShortTimeString()} ");
             var product = _productService.GetProductWithPriceById(id: id).Data;
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
@@ -60,6 +65,7 @@ namespace PriceMonitoring.WebUI.Controllers
             ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
             ViewData["Dates"] = JsonModel.SerializeObject(value: dates);
             ViewData["Products"] = JsonModel.SerializeObject(value: products);
+            _logger.LogInformation($"Getting {product.Name} detail");
             return View(model: productPriceModel);
         }
 
@@ -72,6 +78,7 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpGet]
         public IActionResult Search(string q)
         {
+            _logger.LogInformation($"Called search method in {DateTime.Now.ToShortTimeString()} ");
             _chartProducts.Clear();
             if (!string.IsNullOrEmpty(q))
             {
@@ -91,6 +98,7 @@ namespace PriceMonitoring.WebUI.Controllers
         [HttpGet]
         public IActionResult AddToCompare(int id)
         {
+            _logger.LogInformation($"Called compare method in {DateTime.Now.ToShortTimeString()} ");
             var dates = _productPriceService.GetAll().Data.GroupBy(x => x.SavedDate.Date).Select(x => x.Key.ToShortDateString()).ToList();
             var product = _productService.GetProductWithPriceById(id: id).Data;
             if (dates.Count > product.ProductPrice.Count)

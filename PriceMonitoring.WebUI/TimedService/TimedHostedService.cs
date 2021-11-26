@@ -9,6 +9,7 @@ using PriceMonitoring.WebUI.Models.GroceryStore;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -32,27 +33,27 @@ namespace PriceMonitoring.WebUI.TimedService
 
         public Task StartAsync(CancellationToken stoppingToken)
         {
-            //var timeDelay = GetTimeDelay();
-            //_timer = new Timer(DoWork, null, TimeSpan.FromSeconds(timeDelay),
-            //                                 TimeSpan.FromHours(24));
+            var timeDelay = GetTimeDelay();
+            _timer = new Timer(DoWork, null, TimeSpan.FromSeconds(timeDelay),
+                                             TimeSpan.FromHours(24));
             return Task.CompletedTask;
         }
 
         private double GetTimeDelay()
         {
-            var shouldExecutedTime = TimeOnly.Parse("15:43");
-            var nowTime = TimeOnly.FromDateTime(DateTime.Now);
-            var timeDelay = (shouldExecutedTime - nowTime).TotalSeconds;
-            return timeDelay;
+            var shouldExecutedTime = DateTime.Parse("17:42");
+            var nowTime = DateTime.Parse(DateTime.Now.ToShortTimeString());
+            var delayTime = shouldExecutedTime >= nowTime ? (shouldExecutedTime - nowTime).TotalSeconds : new TimeSpan(24, 0, 0).TotalSeconds;
+            return delayTime;
         }
 
         private void DoWork(object state)
         {
             var productsFromMigros = new Migros().GetProducts(url: "https://www.migros.com.tr/meyve-sebze-c-2").ToList();
-            SaveDatabase(products: productsFromMigros);
+            SaveProductToDatabaseAndSendEmailToSubscribedUser(products: productsFromMigros);
 
             var productsFromA101 = new A101().GetProducts(url: "https://www.a101.com.tr/market/meyve-sebze/").ToList();
-            SaveDatabase(productsFromA101);
+            SaveProductToDatabaseAndSendEmailToSubscribedUser(productsFromA101);
         }
 
         private void SetServices()
@@ -65,7 +66,7 @@ namespace PriceMonitoring.WebUI.TimedService
             _userService = scope.ServiceProvider.GetService<IUserService>();
         }
 
-        private void SaveDatabase(List<ProductModel> products)
+        private void SaveProductToDatabaseAndSendEmailToSubscribedUser(List<ProductModel> products)
         {
             SetServices();
             var productSubscriptions = _productSubscriptionService.GetAll().Data;
@@ -86,11 +87,14 @@ namespace PriceMonitoring.WebUI.TimedService
                             // send message to users
                             if (user is not null)
                             {
+                                string reminderFilePath = Directory.GetCurrentDirectory() + @"\Views\Shared\PriceReminderTemplate.cshtml";
+                                StreamReader str = new StreamReader(reminderFilePath);
+                                string mailText = str.ReadToEnd();
+                                mailText = mailText.Replace("{productName}", entity.Data.Name)
+                                                    .Replace("{beforePrice}", price.Price.ToString())
+                                                    .Replace("{currentPrice}", productPrice.Price.ToString());
                                 var message = new Message(to: user.Email, subject: "Product price drop",
-                                                              content: $"<div style='margin:10px 10px;'> <h3 style='color:green;'>" +
-                                                              $" The price of {entity.Data.Name} has dropped." +
-                                                              $" <br> The price when you subscribed: {price.Price} TRY " +
-                                                              $" <br> Current price : {productPrice.Price} TRY  </h3> </div>");
+                                                              content: mailText);
                                 _emailService.SendEmail(message: message);
                             }
                         }
