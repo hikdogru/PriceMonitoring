@@ -36,6 +36,7 @@ namespace PriceMonitoring.Business.Abstract
         IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> Search(string q);
         ValidationResult IsProductValidate(Product product);
         IDataResult<IQueryable<ProductListDto>> GetProductListDto();
+        IDataResult<IQueryable<ProductListDto>> GetProductListDtoAsSqlView();
         #endregion
     }
 }

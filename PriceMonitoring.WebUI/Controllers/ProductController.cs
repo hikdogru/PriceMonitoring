@@ -61,7 +61,7 @@ namespace PriceMonitoring.WebUI.Controllers
             var products = new List<ChartJsonModel>();
             products.Add(new ChartJsonModel { Data = prices, Name = product.Name });
             productPriceModel.ProductPrice.ToList().ForEach(x => prices.Add(x.Price));
-            productPriceModel.ProductPrice.ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
+            productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
             ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
             ViewData["Dates"] = JsonModel.SerializeObject(value: dates);
             ViewData["Products"] = JsonModel.SerializeObject(value: products);
@@ -95,7 +95,7 @@ namespace PriceMonitoring.WebUI.Controllers
         }
 
 
-        [HttpGet]
+        [HttpGet("Compare")]
         public IActionResult AddToCompare(int id)
         {
             _logger.LogInformation($"Called compare method in {DateTime.Now.ToShortTimeString()} ");
@@ -140,9 +140,9 @@ namespace PriceMonitoring.WebUI.Controllers
                 _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
             }
 
-            ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
-            ViewData["Dates"] = JsonModel.SerializeObject(value: _dates.OrderBy(x => x));
-            ViewData["Products"] = JsonModel.SerializeObject(value: _chartProducts);
+            TempData["Prices"] = JsonModel.SerializeObject(value: prices);
+            TempData["Dates"] = JsonModel.SerializeObject(value: _dates);
+            TempData["Products"] = JsonModel.SerializeObject(value: _chartProducts);
 
             return View("Compare", model: _searchResults.ToList());
         }

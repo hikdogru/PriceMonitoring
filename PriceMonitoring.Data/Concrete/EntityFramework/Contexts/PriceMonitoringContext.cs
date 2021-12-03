@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PriceMonitoring.Data.Concrete.EntityFramework.Config;
 using PriceMonitoring.Entities.Concrete;
+using PriceMonitoring.Entities.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,8 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
         public DbSet<Website> Websites { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<ProductSubscription> ProductSubscriptions { get; set; }
+
+        public DbSet<ProductListDto> ProductList_View { get; set; }
 
         public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
         {
@@ -33,7 +36,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
             modelBuilder.ApplyConfiguration(new WebsiteConfiguration());
             modelBuilder.ApplyConfiguration(new UserConfiguration());
             modelBuilder.ApplyConfiguration(new ProductSubscriptionConfiguration());
-
+            modelBuilder.ApplyConfiguration(new ProductListViewConfiguration());
         }
     }
 }

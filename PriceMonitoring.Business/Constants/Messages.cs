@@ -33,7 +33,7 @@ namespace PriceMonitoring.Business.Constants
         public static string UserIsNotExist = "User is not exist!";
 
 
-        public static string ProductSubscriptionAdded = "ProductSubscription is added successfuly";
+        public static string ProductSubscriptionAdded = "Product is subscribed successfuly";
         public static string ProductSubscriptionUpdated = "ProductSubscription is updated successfuly";
         public static string ProductSubscriptionDeleted = "ProductSubscription is deleted successfuly";
         public static string ProductSubscriptionsListed = "ProductSubscriptions are listed successfuly";

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PriceMonitoring.Business.Abstract;
 using PriceMonitoring.Business.Concrete;
 using PriceMonitoring.Business.ValidationRules.FluentValidation;
@@ -63,6 +64,13 @@ namespace PriceMonitoring.WebUI
 
             // Session
             services.AddSession(option => option.IdleTimeout = TimeSpan.FromMinutes(20));
+
+            services.AddLogging(option =>
+            {
+                option.ClearProviders();
+                option.AddFile("Logs/pricemonitoring-{Date}.txt");
+
+            });
 
             services.AddControllersWithViews()
           .AddNewtonsoftJson(options =>

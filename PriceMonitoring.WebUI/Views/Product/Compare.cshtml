@@ -1,14 +1,14 @@
 ﻿@model List<ProductWithPriceAndWebsiteViewModel>
 @{
-    var chartProducts = ViewData["Products"];
+    var chartProducts = TempData["Products"];
     var chartProduct = new List<ChartJsonModel>();
     var chartModel = new ChartViewModel();
     if (chartProducts is not null)
     {
         chartProduct = JsonConvert.DeserializeObject<List<ChartJsonModel>>(chartProducts.ToString());
-        chartModel.Products = ViewData["Products"].ToString();
-        chartModel.Dates = ViewData["Dates"].ToString();
-        chartModel.Prices = ViewData["Prices"].ToString();
+        chartModel.Products = TempData["Products"].ToString();
+        chartModel.Dates = TempData["Dates"].ToString();
+        chartModel.Prices = TempData["Prices"].ToString();
     }
 
     var isUserAuthenticated = SessionModel.IsSessionExist(key: "email", httpContext: Context);

@@ -66,6 +66,12 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
             return filter == null ? products : products.Where(filter);
         }
 
+        public IQueryable<ProductListDto> GetProductListDtoAsSqlView(Expression<Func<ProductListDto, bool>> filter = null)
+        {
+            var products = _context.ProductList_View.AsQueryable();
+            return filter == null ? products : products.Where(filter);
+        }
+
         public IQueryable<ProductWithPriceAndWebsiteDto> Search(string q)
         {
             var products = GetProductsWithPriceAndWebsite().Where(x => x.Product.Name.Contains(q)).AsQueryable();

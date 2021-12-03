@@ -22,6 +22,7 @@ namespace PriceMonitoring.Data.Abstract
         #region async
 
         Task<IQueryable<ProductListDto>> GetProductListDtoAsync(Expression<Func<ProductListDto, bool>> filter = null);
+        IQueryable<ProductListDto> GetProductListDtoAsSqlView(Expression<Func<ProductListDto, bool>> filter = null);
 
         #endregion
 

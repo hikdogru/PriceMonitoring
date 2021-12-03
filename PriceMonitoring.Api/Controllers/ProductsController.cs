@@ -32,9 +32,9 @@ namespace PriceMonitoring.Api.Controllers
         #region methods
 
         [HttpGet(Name = "getallproducts")]
-        public async Task<IActionResult> GetAllProducts()
+        public IActionResult GetAllProducts()
         {
-            var result = await _productService.GetProductListDtoAsync();
+            var result = _productService.GetProductListDtoAsSqlView();
             if (result.Success)
             {
                 return Ok(result);

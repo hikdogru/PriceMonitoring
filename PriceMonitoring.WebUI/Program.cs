@@ -18,10 +18,7 @@ namespace PriceMonitoring.WebUI
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging((hostingContext, builder) =>
-                {
-                    builder.AddFile("Logs/pricemonitoring-{Date}.txt");
-                })
+                
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
