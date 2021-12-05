@@ -18,7 +18,9 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Contexts
         public DbSet<User> Users { get; set; }
         public DbSet<ProductSubscription> ProductSubscriptions { get; set; }
 
+        
         public DbSet<ProductListDto> ProductList_View { get; set; }
+
 
         public PriceMonitoringContext(DbContextOptions<PriceMonitoringContext> options) : base(options: options)
         {

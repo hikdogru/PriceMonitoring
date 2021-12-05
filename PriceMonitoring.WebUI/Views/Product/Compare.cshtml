@@ -10,6 +10,12 @@
         chartModel.Dates = TempData["Dates"].ToString();
         chartModel.Prices = TempData["Prices"].ToString();
     }
+    var productSubcriptions = new List<ProductSubscription>();
+    if (TempData["Subcriptions"] is not null)
+    {
+        productSubcriptions = (List<ProductSubscription>)TempData["Subcriptions"];
+    }
+
 
     var isUserAuthenticated = SessionModel.IsSessionExist(key: "email", httpContext: Context);
 
@@ -41,7 +47,19 @@
 
                         @if (isUserAuthenticated)
                         {
-                            <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
+                            if (productSubcriptions.Count > 0)
+                            {
+                                if (productSubcriptions.Where(x => x.ProductId == product.Product.Id).Count() > 0)
+                                {
+                                    <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post" disabled> Subscribe </button>
+                                }
+                                else
+                                {
+                                    <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
+
+                                }
+                            }
+
                             @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
                             {
                                 string alertType = TempData["AlertType"] as string;

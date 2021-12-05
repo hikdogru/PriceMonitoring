@@ -88,6 +88,13 @@ namespace PriceMonitoring.WebUI.Controllers
                     _searchResults = new();
                     var products = result.Data.ToList();
                     products.ForEach(x => _searchResults.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(x)));
+                    string userEmail = HttpContext.Session.GetString(key: "email");
+                    if (!string.IsNullOrEmpty(userEmail))
+                    {
+                        int userId = _userService.GetByEmail(email: userEmail).Data.Id;
+                        TempData["Subcriptions"] = _productSubscriptionService.GetAllByUserId(userId: userId).Data.ToList();
+                    }
+
                     return View("Compare", model: _searchResults);
                 }
             }
@@ -143,6 +150,12 @@ namespace PriceMonitoring.WebUI.Controllers
             TempData["Prices"] = JsonModel.SerializeObject(value: prices);
             TempData["Dates"] = JsonModel.SerializeObject(value: _dates);
             TempData["Products"] = JsonModel.SerializeObject(value: _chartProducts);
+            string userEmail = HttpContext.Session.GetString(key: "email");
+            if (!string.IsNullOrEmpty(userEmail))
+            {
+                int userId = _userService.GetByEmail(email: userEmail).Data.Id;
+                TempData["Subcriptions"] = _productSubscriptionService.GetAllByUserId(userId: userId).Data.ToList();
+            }
 
             return View("Compare", model: _searchResults.ToList());
         }
@@ -170,7 +183,12 @@ namespace PriceMonitoring.WebUI.Controllers
 
             TempData["Message"] = result.Message;
             TempData["ProductId"] = id;
-
+            string userEmail = HttpContext.Session.GetString(key: "email");
+            if (!string.IsNullOrEmpty(userEmail))
+            {
+                int userId = _userService.GetByEmail(email: userEmail).Data.Id;
+                TempData["Subcriptions"] = _productSubscriptionService.GetAllByUserId(userId: userId).Data.ToList();
+            }
             return View(nameof(Compare), model: _searchResults);
         }
 
@@ -190,7 +208,6 @@ namespace PriceMonitoring.WebUI.Controllers
                     products.Add(_mapper.Map<ProductWithPriceAndWebsiteViewModel>(product));
                 }
                 return View(viewName: "Subscriptions", model: products);
-
             }
             return NotFound();
         }

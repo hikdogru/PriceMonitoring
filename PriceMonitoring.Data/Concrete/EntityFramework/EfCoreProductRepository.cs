@@ -35,7 +35,6 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         public IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null)
         {
             var products = _context.Products.Include(x => x.ProductPrice).AsSplitQuery();
-
             return filter == null ? products : products.Where(filter);
         }
 
@@ -81,13 +80,13 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         public async Task<IQueryable<ProductListDto>> GetProductListDtoAsync(Expression<Func<ProductListDto, bool>> filter = null)
         {
             var products = (from product in await _context.Products.ToListAsync()
-                           select new ProductListDto()
-                           {
-                               Id = product.Id,
-                               Name = product.Name,
-                               Image = product.Image,
-                               WebsiteId = product.WebsiteId
-                           }).AsQueryable();
+                            select new ProductListDto()
+                            {
+                                Id = product.Id,
+                                Name = product.Name,
+                                Image = product.Image,
+                                WebsiteId = product.WebsiteId
+                            }).AsQueryable();
             return filter == null ? products : products.Where(filter);
         }
     }
