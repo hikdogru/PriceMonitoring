@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BCrypt.Net;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using PriceMonitoring.Entities.Concrete;
 using System;
@@ -11,6 +12,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Config
 {
     public class UserConfiguration : IEntityTypeConfiguration<User>
     {
+       
         public void Configure(EntityTypeBuilder<User> builder)
         {
             builder
@@ -38,6 +40,17 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework.Config
                 .HasMaxLength(1)
                 .HasDefaultValue(0)
                 .IsRequired();
+
+            builder.HasData(new User
+            {
+                Id = 1,
+                FirstName = "Demo" ,
+                LastName = "User",
+                Email = "demo@demo.com",
+                IsConfirm = true,
+                Password = BCrypt.Net.BCrypt.HashPassword("DemoTestPassword123_"),
+                Token = ""
+            });
 
         }
     }

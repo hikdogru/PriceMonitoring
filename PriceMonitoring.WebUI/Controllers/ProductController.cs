@@ -54,12 +54,12 @@ namespace PriceMonitoring.WebUI.Controllers
         public IActionResult Detail(int id)
         {
             _logger.LogInformation($"Called product detail in {DateTime.Now.ToShortTimeString()} ");
-            var product = _productService.GetProductWithPriceById(id: id).Data;
+            var product = _productService.GetProductWithWebsiteById(id: id).Data;
             var productPriceModel = _mapper.Map<ProductPriceViewModel>(product);
             var prices = new List<double>();
             var dates = new List<string>();
             var products = new List<ChartJsonModel>();
-            products.Add(new ChartJsonModel { Data = prices, Name = product.Name });
+            products.Add(new ChartJsonModel { Data = prices, Name = product.Name + " " + product.Website.Name });
             productPriceModel.ProductPrice.ToList().ForEach(x => prices.Add(x.Price));
             productPriceModel.ProductPrice.OrderBy(x => x.SavedDate).ToList().ForEach(x => dates.Add(x.SavedDate.ToString("dd,MM,yyyy")));
             ViewData["Prices"] = JsonModel.SerializeObject(value: prices);
@@ -107,7 +107,7 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             _logger.LogInformation($"Called compare method in {DateTime.Now.ToShortTimeString()} ");
             var dates = _productPriceService.GetAll().Data.GroupBy(x => x.SavedDate.Date).Select(x => x.Key.ToShortDateString()).ToList();
-            var product = _productService.GetProductWithPriceById(id: id).Data;
+            var product = _productService.GetProductWithWebsiteById(id: id).Data;
             if (dates.Count > product.ProductPrice.Count)
             {
                 List<string> dates2 = new();
@@ -144,7 +144,7 @@ namespace PriceMonitoring.WebUI.Controllers
             }
             if (isExistProductInList == false)
             {
-                _chartProducts.Add(new ChartJsonModel { Name = product.Name, Data = prices });
+                _chartProducts.Add(new ChartJsonModel { Name = product.Name + " " + product.Website.Name, Data = prices });
             }
 
             TempData["Prices"] = JsonModel.SerializeObject(value: prices);

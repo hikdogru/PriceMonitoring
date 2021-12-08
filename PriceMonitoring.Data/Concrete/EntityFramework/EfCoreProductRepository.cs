@@ -29,7 +29,7 @@ namespace PriceMonitoring.Data.Concrete.EntityFramework
         }
 
         #endregion
-
+        
         #region methods
 
         public IQueryable<Product> GetProductsWithPrice(Expression<Func<Product, bool>> filter = null)

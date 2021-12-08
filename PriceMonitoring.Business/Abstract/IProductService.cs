@@ -33,6 +33,7 @@ namespace PriceMonitoring.Business.Abstract
         IDataResult<IQueryable<Product>> GetProductsWithPrice();
         IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> GetProductsWithPriceAndWebsite(Expression<Func<Product, bool>> filter = null);
         IDataResult<Product> GetProductWithPriceById(int id);
+        IDataResult<Product> GetProductWithWebsiteById(int id);
         IDataResult<IQueryable<ProductWithPriceAndWebsiteDto>> Search(string q);
         ValidationResult IsProductValidate(Product product);
         IDataResult<IQueryable<ProductListDto>> GetProductListDto();

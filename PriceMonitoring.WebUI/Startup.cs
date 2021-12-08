@@ -13,7 +13,9 @@ using PriceMonitoring.Business.ValidationRules.FluentValidation;
 using PriceMonitoring.Data.Abstract;
 using PriceMonitoring.Data.Concrete.EntityFramework;
 using PriceMonitoring.Data.Concrete.EntityFramework.Contexts;
+using PriceMonitoring.Entities.Concrete;
 using PriceMonitoring.WebUI.EmailService;
+using PriceMonitoring.WebUI.Models;
 using PriceMonitoring.WebUI.TimedService;
 using System;
 using System.Collections.Generic;
@@ -42,6 +44,8 @@ namespace PriceMonitoring.WebUI
             // Email configuration
             var emailConfig = Configuration.GetSection("EmailConfiguration").Get<EmailConfiguration>();
             services.AddSingleton(emailConfig);
+
+       
 
             // Email sender
             services.AddScoped<IEmailSender, EmailSender>();

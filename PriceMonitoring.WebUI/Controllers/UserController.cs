@@ -92,7 +92,7 @@ namespace PriceMonitoring.WebUI.Controllers
         {
             var loginDto = _mapper.Map<UserLoginDto>(model);
             // Manuel validation
-            var result = ValidationTool.Validate(new UserLoginValidator(), loginDto); ;
+            var result = ValidationTool.Validate(new UserLoginValidator(), loginDto);
             result.AddToModelState(ModelState, null);
             if (result.IsValid)
             {
@@ -121,6 +121,34 @@ namespace PriceMonitoring.WebUI.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult LoginWithDemoAccount()
+        {
+            string email = "demo@demo.com";
+            var user = _userService.GetByEmail(email: email);
+            if (user.Success && user.Data.IsConfirm)
+            {
+                var passwordVerified = BCrypt.Net.BCrypt.Verify("DemoTestPassword123_", user.Data.Password);
+                if (passwordVerified)
+                {
+                    _logger.LogInformation($"Demouser is logged in {DateTime.Now.ToShortTimeString()} Demouser email: {user.Data.Email}");
+                    SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
+                    return RedirectToAction(nameof(Index), "Home");
+                }
+                else
+                {
+                    _logger.LogInformation($"Demouser is not logged in {DateTime.Now.ToShortTimeString()} Demouser email: {user.Data.Email}");
+                    ViewData["Message"] = "Wrong password or email!";
+                }
+            }
+            else
+            {
+                ViewData["Message"] = "Your account is not confirmed!";
+            }
+
+            return View("Login");
+        }
+
         public IActionResult Logout()
         {
             SessionModel.ClearUserSession(httpContext: HttpContext);
@@ -147,6 +175,8 @@ namespace PriceMonitoring.WebUI.Controllers
 
             return View();
         }
+
+        
     }
     #endregion
 }

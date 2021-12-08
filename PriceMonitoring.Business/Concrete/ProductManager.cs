@@ -212,6 +212,11 @@ namespace PriceMonitoring.Business.Concrete
             return new SuccessDataResult<IQueryable<ProductListDto>>(await _unitOfWork.Products.GetProductListDtoAsync(), message: Messages.ProductsListed);
         }
 
+        public IDataResult<Product> GetProductWithWebsiteById(int id)
+        {
+            return new SuccessDataResult<Product>(GetProductsWithPriceAndWebsite().Data.SingleOrDefault(x => x.Product.Id == id).Product);
+        }
+
         #endregion
     }
 }
