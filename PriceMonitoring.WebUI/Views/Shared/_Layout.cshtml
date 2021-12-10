@@ -43,7 +43,7 @@
                     {
                         <div class="d-flex">
                             <a class="btn btn-primary m-2" asp-action="Register" asp-controller="User">Register</a>
-                            <a class="btn btn-success m-2" asp-action="Login" asp-controller="User">Login</a>
+                            <a class="btn btn-success m-2" asp-action="Login" asp-controller="User" asp-route-returnUrl="@Context.Request.Path">Login</a>
                         </div>
                     }
                     else

@@ -1,12 +1,15 @@
 ﻿@model LoginModel
+@{
+    var returnUrl = Context.Request.Query["returnUrl"];
+}
 
 @section Styles
 {
-    <style>
-        div.mb-3 > span {
-            color: red;
-        }
-    </style>
+<style>
+    div.mb-3 > span {
+        color: red;
+    }
+</style>
 }
 
 
@@ -14,6 +17,7 @@
 
 <div asp-validation-summary="ModelOnly"></div>
 <form method="post">
+    <input type="hidden" value="@returnUrl" name="returnUrl" />
     <div class="mb-3">
         <label asp-for="Email" class="form-label">Email address</label>
         <input class="form-control" asp-for="Email">

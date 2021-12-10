@@ -88,7 +88,7 @@ namespace PriceMonitoring.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(LoginModel model)
+        public IActionResult Login(LoginModel model, string returnUrl)
         {
             var loginDto = _mapper.Map<UserLoginDto>(model);
             // Manuel validation
@@ -104,6 +104,10 @@ namespace PriceMonitoring.WebUI.Controllers
                     {
                         _logger.LogInformation($"User is logged in {DateTime.Now.ToShortTimeString()} User email: {user.Data.Email}");
                         SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
+                        if (!string.IsNullOrEmpty(value: returnUrl))
+                        {
+                            return Redirect(url: returnUrl);
+                        }
                         return RedirectToAction(nameof(Index), "Home");
                     }
                     else
@@ -122,7 +126,7 @@ namespace PriceMonitoring.WebUI.Controllers
         }
 
         [HttpPost]
-        public IActionResult LoginWithDemoAccount()
+        public IActionResult LoginWithDemoAccount(string returnUrl = "")
         {
             string email = "demo@demo.com";
             var user = _userService.GetByEmail(email: email);
@@ -133,6 +137,10 @@ namespace PriceMonitoring.WebUI.Controllers
                 {
                     _logger.LogInformation($"Demouser is logged in {DateTime.Now.ToShortTimeString()} Demouser email: {user.Data.Email}");
                     SessionModel.CreateUserSession(user: user.Data, httpContext: HttpContext);
+                    if (!string.IsNullOrEmpty(value: returnUrl))
+                    {
+                        return Redirect(url: returnUrl);
+                    }
                     return RedirectToAction(nameof(Index), "Home");
                 }
                 else
@@ -176,7 +184,7 @@ namespace PriceMonitoring.WebUI.Controllers
             return View();
         }
 
-        
+
     }
     #endregion
 }

@@ -30,46 +30,44 @@
 @if (Model != null)
 {
     <div class="row">
-       
-            @foreach (var product in Model)
-            {
-                <div class="col-md-3">
-                    <form method="get">
-                        @await Html.PartialAsync(partialViewName: "_ProductPartial", model: product)
-                        <div class="text-center">
-                            @if (chartProduct?.Where(x => x.Name == product.Product.Name).Count() > 0)
+
+        @foreach (var product in Model)
+        {
+            <div class="col-md-3">
+                <form method="get">
+                    @await Html.PartialAsync(partialViewName: "_ProductPartial", model: product)
+                    <div class="text-center">
+                        @if (chartProduct?.Where(x => x.Name == product.Product.Name + " " + product.Website.Name).Count() > 0)
+                        {
+                            <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
+                        }
+                        else
+                        {
+                            <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                        }
+
+                        @if (isUserAuthenticated)
+                        {
+
+                            if (productSubcriptions.Where(x => x.ProductId == product.Product.Id).Count() > 0)
                             {
-                                <button type="submit" class="btn btn-success" asp-action="AddToCompare" disabled>Add to compare</button>
+                                <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post" disabled> Subscribe </button>
                             }
                             else
                             {
-                                <button type="submit" class="btn btn-success" asp-action="AddToCompare">Add to compare</button>
+                                <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
                             }
 
-                            @if (isUserAuthenticated)
+                            @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
                             {
-                                if (productSubcriptions.Count > 0)
-                                {
-                                    if (productSubcriptions.Where(x => x.ProductId == product.Product.Id).Count() > 0)
-                                    {
-                                        <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post" disabled> Subscribe </button>
-                                    }
-                                    else
-                                    {
-                                        <button type="submit" class="btn btn-primary m-1" asp-action="SubscribeToProduct" formmethod="post"> Subscribe </button>
-                                    }
-                                }
-
-                                @if (TempData["Message"] is not null && int.Parse(TempData["ProductId"].ToString()) == product.Product.Id)
-                                {
-                                    string alertType = TempData["AlertType"] as string;
-                                    <div class="alert alert-@alertType"> @TempData["Message"] </div>
-                                }
+                                string alertType = TempData["AlertType"] as string;
+                                <div class="alert alert-@alertType"> @TempData["Message"] </div>
                             }
-                        </div>
-                    </form>
-                </div>
-            }
+                        }
+                    </div>
+                </form>
+            </div>
+        }
 
     </div>
 }
